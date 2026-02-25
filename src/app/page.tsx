@@ -1,0 +1,130 @@
+"use client";
+
+import { motion, Variants } from "framer-motion";
+import { ArrowRight, Leaf, Zap, TrendingDown, Info } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+
+export default function Home() {
+  const container: any = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const item: any = {
+    hidden: { opacity: 0, y: 30 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80, damping: 15 } },
+  };
+
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-8 max-w-7xl mx-auto w-full">
+      <motion.div
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="w-full flex flex-col items-center text-center mt-12 md:mt-24"
+      >
+        <motion.div variants={item} className="mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 backdrop-blur-md border border-primary/20 text-primary-foreground text-xs font-bold uppercase tracking-wider relative overflow-hidden group">
+            <div className="absolute inset-0 bg-primary/10 group-hover:bg-primary/20 transition-colors" />
+            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse relative z-10" />
+            <span className="relative z-10">Delta Energy · 建築能效專家</span>
+          </div>
+        </motion.div>
+
+        <motion.h1
+          variants={item}
+          className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-foreground leading-[1.1] mb-8"
+        >
+          從 BERS 評級，<br />
+          到 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400">
+            淨零實踐
+          </span> 的完整路徑
+        </motion.h1>
+
+        <motion.p
+          variants={item}
+          className="text-lg md:text-xl text-muted-foreground mb-12 max-w-2xl leading-relaxed font-light border-l-4 border-primary/50 pl-6 text-left mx-auto"
+        >
+          取得 BERS 標章只是第一步。<br />
+          台達能源整合 <strong className="text-foreground font-medium">AI 診斷</strong> 與 <strong className="text-foreground font-medium">EMS 智慧調控</strong>，
+          <br className="hidden md:block" />
+          為您提供從「建築健檢」到「設備優化」的一站式節能方案。
+        </motion.p>
+
+        <motion.div variants={item} className="flex flex-col sm:flex-row gap-6 w-full max-w-md mx-auto sm:max-w-none sm:w-auto">
+          <Link href="/assessment" className="w-full sm:w-auto">
+            <Button size="lg" className="w-full sm:w-auto h-14 px-8 text-lg rounded-full group relative overflow-hidden bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_40px_-10px_rgba(5,150,105,0.5)] transition-all duration-300">
+              <span className="relative z-10 font-bold flex items-center gap-2">
+                開始 BERS 評估
+                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+              </span>
+            </Button>
+          </Link>
+          <Button size="lg" variant="outline" className="w-full sm:w-auto h-14 px-8 text-lg rounded-full backdrop-blur-sm border-white/10 hover:bg-white/5 flex items-center gap-2">
+            <Info size={18} />
+            預約專家諮詢
+          </Button>
+        </motion.div>
+      </motion.div>
+
+      <motion.div
+        variants={container}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: "-100px" }}
+        className="grid md:grid-cols-3 gap-6 mt-32 w-full"
+      >
+        <FeatureCard
+          icon={<Leaf className="w-8 h-8 text-emerald-400" />}
+          title="BERS 精準評級"
+          desc="依據台灣綠建築評估手冊 (EEWH)，透過我們開發的 AI 引擎快速試算 EUI 指標，精準定位建築能效等級。"
+          delay={0.1}
+        />
+        <FeatureCard
+          icon={<Zap className="w-8 h-8 text-amber-400" />}
+          title="深度能耗診斷"
+          desc="超越表面分數。深入分析空調、照明與動力設備的用電結構，識別潛在的「吃電怪獸」與改善熱點。"
+          delay={0.2}
+        />
+        <FeatureCard
+          icon={<TrendingDown className="w-8 h-8 text-cyan-400" />}
+          title="提升方案導入"
+          desc="這是台達的強項。提供 Delta EMS 能源管理系統、高效變頻設備汰換與綠電轉供建議，落實真正的節能。"
+          delay={0.3}
+        />
+      </motion.div>
+    </div>
+  );
+}
+
+function FeatureCard({ icon, title, desc, delay }: { icon: React.ReactNode; title: string; desc: string; delay: number }) {
+  return (
+    <motion.div
+      variants={{
+        hidden: { opacity: 0, y: 50 },
+        show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 60, damping: 20, delay } }
+      }}
+      whileHover={{ y: -8, transition: { duration: 0.2 } }}
+      className="group"
+    >
+      <Card className="h-full p-8 bg-card/40 backdrop-blur-xl border-white/5 hover:border-white/20 transition-colors shadow-2xl relative overflow-hidden rounded-3xl">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="relative z-10">
+          <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 shrink-0 group-hover:scale-110 group-hover:bg-primary/20 transition-all duration-500">
+            {icon}
+          </div>
+          <h3 className="text-2xl font-bold text-foreground tracking-tight mb-4">{title}</h3>
+          <p className="text-muted-foreground leading-relaxed font-light">{desc}</p>
+        </div>
+      </Card>
+    </motion.div>
+  );
+}
