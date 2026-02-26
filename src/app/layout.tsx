@@ -26,11 +26,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth dark">
+    <html lang="en" className="scroll-smooth">
       <body
-        className={`${openSans.variable} ${poppins.variable} antialiased font-sans flex flex-col min-h-screen`}
+        className={`${openSans.variable} ${poppins.variable} antialiased font-sans flex flex-col min-h-screen bg-background text-foreground`}
       >
-        <div className="fixed inset-0 z-[-1] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background"></div>
         <Navbar />
         <main className="flex-1 pt-24 pb-12 flex flex-col relative z-0">
           {children}

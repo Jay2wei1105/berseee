@@ -33,18 +33,13 @@ export function Navbar() {
             className={`fixed top-4 left-0 right-0 z-50 flex justify-center px-4 transition-all duration-500`}
         >
             <div
-                className={`w-full max-w-5xl rounded-2xl transition-all duration-300 overflow-hidden ${isScrolled
-                        ? "bg-card/40 backdrop-blur-xl border border-white/10 shadow-2xl"
-                        : "bg-transparent border border-transparent"
+                className={`w-full max-w-5xl rounded-full transition-all duration-300 overflow-hidden ${isScrolled
+                    ? "bg-popover/80 backdrop-blur-xl border border-border shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
+                    : "bg-transparent border border-transparent"
                     }`}
             >
                 <div className="flex items-center justify-between px-6 py-4">
                     <Link href="/" className="flex items-center gap-3 z-10 group">
-                        <div className="p-2 rounded-xl bg-primary/20 text-primary border border-primary/30 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
-                            <svg width="20" height="20" viewBox="0 0 100 100" fill="currentColor">
-                                <polygon points="50,10 90,90 10,90" />
-                            </svg>
-                        </div>
                         <span className="font-bold text-xl tracking-tight text-foreground">
                             DSE<span className="font-light text-muted-foreground">.bers</span>
                         </span>
@@ -98,8 +93,8 @@ export function Navbar() {
                                         href={item.id}
                                         onClick={() => setIsMenuOpen(false)}
                                         className={`flex items-center justify-between p-3 rounded-lg text-sm font-medium ${pathname === item.id
-                                                ? "bg-primary/20 text-primary"
-                                                : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                                            ? "bg-primary/20 text-primary"
+                                            : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
                                             }`}
                                     >
                                         {item.label}
