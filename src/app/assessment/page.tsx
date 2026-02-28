@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowLeft, Building2, Zap, LayoutDashboard, Settings2, Droplets, Activity, BarChart3, Save, Plus } from "lucide-react";
+import { ArrowRight, ArrowLeft, Building2, Zap, LayoutDashboard, Settings2, Droplets, Activity, BarChart3, Save, Plus, Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { FloorPlanTool } from "@/components/FloorPlanTool";
 
 import { buildingTypes } from "@/lib/building-types";
 import { euiTable } from "@/lib/eui-table";
@@ -79,7 +80,8 @@ export default function AssessmentPage() {
 
     // Spaces
     const [spaces, setSpaces] = useState([{ id: 1, typeCode: "", isIntermittent: true, area: "" }]);
-    const addSp = () => setSpaces(p => [...p, { id: Date.now(), typeCode: "", isIntermittent: true, area: "" }]);
+    const [floorLicenseArea, setFloorLicenseArea] = useState("");
+    const addSp = (area?: number) => setSpaces(p => [...p, { id: Date.now(), typeCode: "", isIntermittent: true, area: area ? area.toFixed(1) : "" }]);
     const rmSp = (id: number) => setSpaces(p => p.filter(s => s.id !== id));
 
     // Equipment - AC
@@ -188,16 +190,16 @@ export default function AssessmentPage() {
 
                 {/* Left Nav */}
                 <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="w-full lg:w-[190px] shrink-0 lg:sticky lg:top-24">
-                    <div className="bg-zinc-900/60 backdrop-blur-xl border border-white/5 p-1.5 rounded-2xl shadow-2xl flex flex-col gap-0.5">
+                    <div className="bg-zinc-900/60 backdrop-blur-xl border border-white/5 p-1.5 rounded-2xl shadow-2xl flex flex-row flex-wrap gap-0.5 lg:flex-col">
                         {steps.map((step) => {
                             const isActive = activeTab === step.id;
                             const Icon = step.icon;
                             return (
                                 <button key={step.id} onClick={() => setActiveTab(step.id)}
-                                    className={`relative flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium transition-all duration-200 z-10 w-full text-left overflow-hidden ${isActive ? "text-white" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03]"}`}>
+                                    className={`relative flex items-center gap-2 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 z-10 text-left overflow-hidden lg:w-full ${isActive ? "text-white" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03]"}`}>
                                     {isActive && <motion.div layoutId="nav-pill" className="absolute inset-0 bg-sky-900/70 border border-sky-500/20 rounded-xl z-[-1]" transition={{ type: "spring", stiffness: 350, damping: 30 }} />}
                                     <Icon size={13} className={isActive ? "text-sky-400" : "text-zinc-600"} />
-                                    <span className="text-[12px] tracking-wide">{step.label}</span>
+                                    <span className="text-[12px] tracking-wide whitespace-nowrap">{step.label}</span>
                                 </button>
                             );
                         })}
@@ -288,44 +290,109 @@ export default function AssessmentPage() {
                                 )}
 
                                 {/* ── 分區空間 ── */}
-                                {activeTab === "spaces" && (
-                                    <motion.div key="spaces" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.15 }} className="space-y-5">
-                                        <div className="flex items-center justify-between mb-6">
-                                            <div className="flex items-center gap-2"><div className="p-1.5 rounded-md bg-emerald-500/10 text-emerald-400"><LayoutDashboard size={14} /></div><h2 className="text-sm font-bold tracking-wider text-emerald-400 uppercase">分區空間資料</h2></div>
-                                            <Button onClick={addSp} variant="outline" size="sm" className="h-7 px-2.5 text-[11px] rounded-lg border-white/10 bg-white/[0.02] text-zinc-500 hover:text-white hover:bg-white/[0.06]"><Plus className="w-3 h-3 mr-1" /> 新增空間</Button>
-                                        </div>
-                                        <div className="rounded-xl overflow-hidden border border-white/[0.06]">
-                                            <div className="grid grid-cols-[2fr_1fr_110px_60px] bg-zinc-800/50 border-b border-white/[0.06]">
-                                                <div className="py-3 px-4 text-[12px] text-zinc-500">空間類型</div>
-                                                <div className="py-3 px-4 text-[12px] text-zinc-500 border-l border-white/[0.06]">空調方式</div>
-                                                <div className="py-3 px-4 text-[12px] text-zinc-500 border-l border-white/[0.06]">面積 (m²)</div>
-                                                <div></div>
+                                {activeTab === "spaces" && (() => {
+                                    const totalSpaceArea = spaces.reduce((s, sp) => s + (Number(sp.area) || 0), 0);
+                                    const basicArea = Number(basic.totalFloorArea) || 0;
+                                    const ratio = basicArea > 0 ? Math.min(totalSpaceArea / basicArea, 1) : 0;
+                                    const isOver = basicArea > 0 && totalSpaceArea > basicArea;
+                                    return (
+                                        <motion.div key="spaces" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.15 }}>
+                                            {/* Header */}
+                                            <div className="flex items-center gap-2 mb-4">
+                                                <div className="p-1.5 rounded-md bg-emerald-500/10 text-emerald-400"><LayoutDashboard size={14} /></div>
+                                                <h2 className="text-sm font-bold tracking-wider text-emerald-400 uppercase">分區空間資料</h2>
                                             </div>
-                                            {spaces.map((sp, idx) => (
-                                                <div key={sp.id} className={`grid grid-cols-[2fr_1fr_110px_60px] border-b border-white/[0.04] last:border-0 ${idx % 2 === 0 ? "bg-zinc-800/20" : ""}`}>
-                                                    <div className="px-3 py-2">
-                                                        <Select value={sp.typeCode} onValueChange={v => setSpaces(spaces.map(s => s.id === sp.id ? { ...s, typeCode: v } : s))}>
-                                                            <SelectTrigger className={SELSM}><SelectValue placeholder="請選擇分區" /></SelectTrigger>
-                                                            <SelectContent className={`${SC} max-h-60`}>{Object.entries(euiTable as any).map(([code, data]: any) => <SelectItem key={code} value={code}>{data.name} ({code})</SelectItem>)}</SelectContent>
-                                                        </Select>
+                                            {/* Two-column layout */}
+                                            <div className="flex flex-col xl:flex-row gap-4">
+
+                                                {/* LEFT: Space form */}
+                                                <div className="flex-1 min-w-0 flex flex-col gap-3">
+                                                    <div className="flex items-center justify-between">
+                                                        <p className="text-[12px] text-zinc-500">填寫各分區空間類型與面積</p>
+                                                        <Button onClick={() => addSp()} variant="outline" size="sm" className="h-7 px-2.5 text-[11px] rounded-lg border-white/10 bg-white/[0.02] text-zinc-500 hover:text-white hover:bg-white/[0.06]"><Plus className="w-3 h-3 mr-1" /> 新增空間</Button>
                                                     </div>
-                                                    <div className="px-3 py-2 border-l border-white/[0.04]">
-                                                        <Select value={sp.isIntermittent ? "yes" : "no"} onValueChange={v => setSpaces(spaces.map(s => s.id === sp.id ? { ...s, isIntermittent: v === "yes" } : s))}>
-                                                            <SelectTrigger className={SELSM}><SelectValue /></SelectTrigger>
-                                                            <SelectContent className={SC}><SelectItem value="yes">間歇</SelectItem><SelectItem value="no">全天</SelectItem></SelectContent>
-                                                        </Select>
+                                                    <div className="rounded-xl overflow-hidden border border-white/[0.06]">
+                                                        <div className="grid grid-cols-[2fr_1fr_100px_50px] bg-zinc-800/50 border-b border-white/[0.06]">
+                                                            <div className="py-2.5 px-3 text-[11px] text-zinc-500">空間類型</div>
+                                                            <div className="py-2.5 px-3 text-[11px] text-zinc-500 border-l border-white/[0.06]">空調</div>
+                                                            <div className="py-2.5 px-3 text-[11px] text-zinc-500 border-l border-white/[0.06]">面積 (m²)</div>
+                                                            <div />
+                                                        </div>
+                                                        {spaces.length === 0 && (
+                                                            <div className="py-6 text-center text-zinc-600 text-xs">尚無分區，點擊「新增空間」或從右側平面圖加入</div>
+                                                        )}
+                                                        {spaces.map((sp, idx) => (
+                                                            <div key={sp.id} className={`grid grid-cols-[2fr_1fr_100px_50px] border-b border-white/[0.04] last:border-0 ${idx % 2 === 0 ? "bg-zinc-800/20" : ""}`}>
+                                                                <div className="px-2 py-1.5">
+                                                                    <Select value={sp.typeCode} onValueChange={v => setSpaces(spaces.map(s => s.id === sp.id ? { ...s, typeCode: v } : s))}>
+                                                                        <SelectTrigger className={SELSM}><SelectValue placeholder="請選擇" /></SelectTrigger>
+                                                                        <SelectContent className={`${SC} max-h-60`}>{Object.entries(euiTable as any).map(([code, data]: any) => <SelectItem key={code} value={code}>{data.name} ({code})</SelectItem>)}</SelectContent>
+                                                                    </Select>
+                                                                </div>
+                                                                <div className="px-2 py-1.5 border-l border-white/[0.04]">
+                                                                    <Select value={sp.isIntermittent ? "yes" : "no"} onValueChange={v => setSpaces(spaces.map(s => s.id === sp.id ? { ...s, isIntermittent: v === "yes" } : s))}>
+                                                                        <SelectTrigger className={SELSM}><SelectValue /></SelectTrigger>
+                                                                        <SelectContent className={SC}><SelectItem value="yes">間歇</SelectItem><SelectItem value="no">全天</SelectItem></SelectContent>
+                                                                    </Select>
+                                                                </div>
+                                                                <div className="px-2 py-1.5 border-l border-white/[0.04]">
+                                                                    <Input type="number" value={sp.area} onChange={e => setSpaces(spaces.map(s => s.id === sp.id ? { ...s, area: e.target.value } : s))} placeholder="m²" className={INPSM} />
+                                                                </div>
+                                                                <div className="flex items-center justify-center border-l border-white/[0.04]">
+                                                                    <button onClick={() => rmSp(sp.id)} className="text-[11px] text-zinc-700 hover:text-red-400 transition-colors px-2">✕</button>
+                                                                </div>
+                                                            </div>
+                                                        ))}
                                                     </div>
-                                                    <div className="px-3 py-2 border-l border-white/[0.04]">
-                                                        <Input type="number" value={sp.area} onChange={e => setSpaces(spaces.map(s => s.id === sp.id ? { ...s, area: e.target.value } : s))} placeholder="m²" className={INPSM} />
-                                                    </div>
-                                                    <div className="flex items-center justify-center border-l border-white/[0.04]">
-                                                        <button onClick={() => rmSp(sp.id)} className="text-[11px] text-zinc-700 hover:text-red-400 transition-colors px-2">移除</button>
+
+                                                    {/* Area comparison */}
+                                                    <div className="bg-zinc-800/30 border border-white/[0.05] rounded-xl p-3 space-y-2">
+                                                        <div className="flex items-center justify-between text-[12px]">
+                                                            <span className="text-zinc-400">分區面積加總</span>
+                                                            <span className={`font-mono font-semibold ${isOver ? "text-red-400" : "text-zinc-200"}`}>{totalSpaceArea.toFixed(1)} m²</span>
+                                                        </div>
+                                                        <div className="flex items-center justify-between text-[12px]">
+                                                            <span className="text-zinc-500">基本資料總樓地板面積</span>
+                                                            <span className="font-mono text-zinc-400">{basicArea > 0 ? `${basicArea} m²` : "未填寫"}</span>
+                                                        </div>
+                                                        {basicArea > 0 && (
+                                                            <div className="space-y-1">
+                                                                <div className="w-full h-1.5 bg-zinc-700/50 rounded-full overflow-hidden">
+                                                                    <div className={`h-full rounded-full transition-all duration-500 ${isOver ? "bg-red-500" : ratio > 0.9 ? "bg-emerald-400" : "bg-sky-500"}`} style={{ width: `${ratio * 100}%` }} />
+                                                                </div>
+                                                                <p className={`text-[11px] ${isOver ? "text-red-400" : ratio > 0.9 ? "text-emerald-400" : "text-zinc-500"}`}>
+                                                                    {isOver ? `⚠️ 超出基本資料面積 ${(totalSpaceArea - basicArea).toFixed(1)} m²` : basicArea > 0 ? `已填寫 ${(ratio * 100).toFixed(1)}%` : ""}
+                                                                </p>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
-                                            ))}
-                                        </div>
-                                    </motion.div>
-                                )}
+
+                                                {/* RIGHT: Floor plan tool */}
+                                                <div className="xl:w-[420px] shrink-0">
+                                                    <div className="bg-zinc-800/20 border border-white/[0.06] rounded-xl p-3 flex flex-col gap-3 h-full">
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="p-1 rounded-md bg-sky-500/10 text-sky-400"><Map size={13} /></div>
+                                                            <p className="text-[12px] font-semibold text-zinc-300">平面圖面積工具</p>
+                                                        </div>
+                                                        <div>
+                                                            <Label className="text-[11px] text-zinc-500 mb-1 block">樓層使用執照總面積 (m²)</Label>
+                                                            <Input type="number" value={floorLicenseArea} onChange={e => setFloorLicenseArea(e.target.value)}
+                                                                placeholder={basicArea > 0 ? `預設使用基本資料 ${basicArea} m²` : "輸入執照總面積"}
+                                                                className={INPSM} />
+                                                            <p className="text-[10px] text-zinc-600 mt-1">用於換算繪製區域的實際面積比例</p>
+                                                        </div>
+                                                        <FloorPlanTool
+                                                            licenseArea={Number(floorLicenseArea) || basicArea}
+                                                            onAddArea={(area) => addSp(area)}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </motion.div>
+                                    );
+                                })()}
 
                                 {/* ── 設備資料 ── */}
                                 {activeTab === "equipment" && (
