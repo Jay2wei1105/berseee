@@ -21,9 +21,13 @@ function shoelace(pts: Pt[]) {
     return Math.abs(a / 2);
 }
 
-interface Props { licenseArea: number; onAddArea: (area: number) => void; }
+interface Props {
+    licenseArea: number;
+    onAddEnergyArea: (area: number) => void;
+    onAddExemptArea: (area: number) => void;
+}
 
-export function FloorPlanTool({ licenseArea, onAddArea }: Props) {
+export function FloorPlanTool({ licenseArea, onAddEnergyArea, onAddExemptArea }: Props) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const fileRef = useRef<HTMLInputElement>(null);
     const polyPtsRef = useRef<Pt[]>([]);
@@ -225,12 +229,18 @@ export function FloorPlanTool({ licenseArea, onAddArea }: Props) {
                                     <span className="text-xs font-mono text-zinc-300 shrink-0 font-semibold">
                                         {realArea > 0 ? `${realArea.toFixed(1)} m²` : "-- m²"}
                                     </span>
-                                    <button onClick={() => onAddArea(realArea)} disabled={realArea <= 0}
-                                        className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed shrink-0">
-                                        <Plus size={9} /> 加入
-                                    </button>
+                                    <div className="flex items-center gap-1 shrink-0">
+                                        <button onClick={() => onAddEnergyArea(realArea)} disabled={realArea <= 0}
+                                            className="flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 transition-all disabled:opacity-30 shrink-0">
+                                            <Plus size={8} /> 耗能
+                                        </button>
+                                        <button onClick={() => onAddExemptArea(realArea)} disabled={realArea <= 0}
+                                            className="flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded-md bg-zinc-500/10 border border-zinc-500/20 text-zinc-400 hover:bg-zinc-500/20 transition-all disabled:opacity-30 shrink-0">
+                                            <Plus size={8} /> 免評
+                                        </button>
+                                    </div>
                                     <button onClick={() => setRegions(prev => prev.filter(x => x.id !== r.id))}
-                                        className="text-zinc-700 hover:text-red-400 transition-colors shrink-0">
+                                        className="text-zinc-700 hover:text-red-400 transition-colors shrink-0 ml-1">
                                         <Trash2 size={11} />
                                     </button>
                                 </div>

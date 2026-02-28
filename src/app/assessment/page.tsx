@@ -101,8 +101,8 @@ function SummaryReport({ result, basic }: { result: CalculationResult; basic: an
                         </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 divide-x divide-white/5">
-                        <ReportRowReliability label="日平均用電量之最大月用電量變動率" valid={result.reliability.isMonthlyValid} desc="合格(<-50%)" />
-                        <ReportRowReliability label="日平均用電量之年變動率" valid={result.reliability.isYearlyValid} desc="合格(<-15%)" />
+                        <ReportRowReliability label="日平均用電量之最大月用電量變動率" valid={result.reliability.isMonthlyValid} value={result.reliability.monthlyMaxVariation} threshold="合格 < 50%" />
+                        <ReportRowReliability label="日平均用電量之年變動率" valid={result.reliability.isYearlyValid} value={result.reliability.yearlyVariation} threshold="合格 < 15%" />
                     </div>
                 </div>
             </ReportSection>
@@ -279,18 +279,25 @@ function ReportRowI({ label, value, unit }: { label: string, value: any, unit: s
     );
 }
 
-function ReportRowReliability({ label, valid, desc }: { label: string, valid: boolean, desc: string }) {
+function ReportRowReliability({ label, valid, value, threshold }: { label: string, valid: boolean, value: number, threshold: string }) {
+    const pct = (value * 100).toFixed(1) + "%";
     return (
         <div className="p-5 flex flex-col gap-3 group">
-            <p className="text-zinc-400 text-sm leading-relaxed">{label}</p>
-            <div className="flex items-center gap-6">
+            <div className="flex justify-between items-start">
+                <p className="text-zinc-400 text-[13px] leading-relaxed max-w-[240px]">{label}</p>
+                <div className="text-right">
+                    <div className={`text-lg font-mono font-black ${valid ? 'text-sky-400' : 'text-red-400'}`}>{pct}</div>
+                    <div className="text-[10px] text-zinc-600 font-bold uppercase tracking-tighter">({threshold})</div>
+                </div>
+            </div>
+            <div className="flex items-center gap-6 mt-1">
                 <div className="flex items-center gap-2">
                     <div className={`w-3 h-3 rounded bg-zinc-800 border-2 ${valid ? 'bg-sky-500 border-sky-400 shadow-[0_0_10px_rgba(14,165,233,0.3)]' : 'border-zinc-700'}`} />
-                    <span className={`text-xs font-bold ${valid ? 'text-sky-400' : 'text-zinc-600'}`}>{desc}</span>
+                    <span className={`text-[10px] font-bold ${valid ? 'text-sky-400' : 'text-zinc-600'}`}>合格</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className={`w-3 h-3 rounded bg-zinc-800 border-2 ${!valid ? 'bg-red-500 border-red-400' : 'border-zinc-700'}`} />
-                    <span className={`text-xs font-bold ${!valid ? 'text-red-400' : 'text-zinc-600'}`}>不合格</span>
+                    <span className={`text-[10px] font-bold ${!valid ? 'text-red-400' : 'text-zinc-600'}`}>不合格</span>
                 </div>
             </div>
         </div>
@@ -401,6 +408,7 @@ export default function AssessmentPage() {
     const setB = (k: string, v: any) => setBasic(p => ({ ...p, [k]: v }));
 
     // Electricity - monthly 2 years
+    const [billCycle, setBillCycle] = useState<"monthly" | "bimonthly">("monthly");
     const [yr1, setYr1] = useState("2024");
     const [yr2, setYr2] = useState("2023");
     const [monthly, setMonthly] = useState(Array.from({ length: 12 }, (_, i) => ({ m: i + 1, y1: "", y2: "" })));
@@ -646,8 +654,14 @@ export default function AssessmentPage() {
 
                                 {/* ── 電費資料 ── */}
                                 {activeTab === "energy" && (
-                                    <motion.div key="energy" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.15 }} className="space-y-5">
-                                        <SectionHeader icon={Zap} title="電費資料（2年）" />
+                                    <motion.div key="energy" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.15 }} className="space-y-6">
+                                        <div className="flex items-center justify-between">
+                                            <SectionHeader icon={Zap} title="電費資料（2年）" />
+                                            <div className="flex items-center gap-3 bg-zinc-800/40 p-1.5 rounded-xl border border-white/[0.05]">
+                                                <button onClick={() => setBillCycle("monthly")} className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${billCycle === "monthly" ? "bg-sky-500 text-white shadow-lg shadow-sky-500/20" : "text-zinc-500 hover:text-zinc-300"}`}>月繳</button>
+                                                <button onClick={() => setBillCycle("bimonthly")} className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${billCycle === "bimonthly" ? "bg-sky-500 text-white shadow-lg shadow-sky-500/20" : "text-zinc-500 hover:text-zinc-300"}`}>雙月繳</button>
+                                            </div>
+                                        </div>
                                         <div className="rounded-xl overflow-hidden border border-white/[0.06]">
                                             <div className="grid grid-cols-[140px_1fr_1fr] bg-zinc-800/50 border-b border-white/[0.06]">
                                                 <div className="py-3 px-4 text-[12px] text-zinc-500 font-medium flex items-center">月</div>
@@ -658,17 +672,20 @@ export default function AssessmentPage() {
                                                     <Select value={yr2} onValueChange={setYr2}><SelectTrigger className="h-11 w-full bg-transparent dark:bg-transparent dark:hover:bg-transparent border-0 text-zinc-300 text-sm shadow-none focus:ring-0"><SelectValue /></SelectTrigger><SelectContent className={SC}>{[2025, 2024, 2023, 2022, 2021].map(y => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}</SelectContent></Select>
                                                 </div>
                                             </div>
-                                            {monthly.map((row, idx) => (
-                                                <div key={row.m} className={`grid grid-cols-[140px_1fr_1fr] border-b border-white/[0.04] last:border-0 ${idx % 2 === 0 ? "bg-zinc-800/20" : ""}`}>
-                                                    <div className="py-2 px-4 text-[13px] text-zinc-400 flex items-center">{MONTHS[idx]}</div>
-                                                    <div className="px-3 py-2 border-l border-white/[0.04]">
-                                                        <Input type="number" value={row.y1} onChange={e => updM(idx, "y1", e.target.value)} placeholder="千瓦時" className={INPSM} />
+                                            {monthly.map((row, idx) => {
+                                                if (billCycle === "bimonthly" && row.m % 2 === 0) return null;
+                                                return (
+                                                    <div key={row.m} className={`grid grid-cols-[140px_1fr_1fr] border-b border-white/[0.04] last:border-0 ${idx % 2 === 0 ? "bg-zinc-800/20" : ""}`}>
+                                                        <div className="py-2 px-4 text-[13px] text-zinc-400 flex items-center">{billCycle === "bimonthly" ? `${row.m}-${row.m + 1} 月` : `${row.m} 月`}</div>
+                                                        <div className="px-3 py-2 border-l border-white/[0.04]">
+                                                            <Input type="number" value={row.y1} onChange={e => updM(idx, "y1", e.target.value)} placeholder="0" className={INPSM} />
+                                                        </div>
+                                                        <div className="px-3 py-2 border-l border-white/[0.04]">
+                                                            <Input type="number" value={row.y2} onChange={e => updM(idx, "y2", e.target.value)} placeholder="0" className={INPSM} />
+                                                        </div>
                                                     </div>
-                                                    <div className="px-3 py-2 border-l border-white/[0.04]">
-                                                        <Input type="number" value={row.y2} onChange={e => updM(idx, "y2", e.target.value)} placeholder="千瓦時" className={INPSM} />
-                                                    </div>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
                                     </motion.div>
                                 )}
@@ -789,7 +806,10 @@ export default function AssessmentPage() {
                                                             </div>
                                                             <FloorPlanTool
                                                                 licenseArea={Number(floorLicenseArea) || basicArea}
-                                                                onAddArea={(area) => addSp(area)}
+                                                                onAddEnergyArea={(area) => addSp(area)}
+                                                                onAddExemptArea={(area) => {
+                                                                    setExemptSpaces(p => [...p, { id: Date.now(), typeCode: "", area: area.toFixed(1) }]);
+                                                                }}
                                                             />
                                                             <div className="p-3 bg-white/5 rounded-xl border border-white/5">
                                                                 <p className="text-[10px] text-zinc-500 leading-relaxed italic">
@@ -966,46 +986,23 @@ export default function AssessmentPage() {
                                 {/* ── 初步結果 ── */}
                                 {activeTab === "result" && (
                                     <motion.div key="result" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.15 }} className="space-y-8">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <div className="p-1.5 rounded-md bg-emerald-500/10 text-emerald-400"><BarChart3 size={14} /></div>
-                                                <h2 className="text-sm font-bold tracking-wider text-emerald-400 uppercase">能效初步評估結果</h2>
-                                            </div>
-                                            <Button onClick={calculate} size="sm" className="h-8 px-4 text-[12px] rounded-lg bg-sky-900/60 hover:bg-sky-800/80 text-sky-100 border border-sky-500/20 transition-all">重新計算</Button>
-                                        </div>
                                         {result ? (
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                                <div className="md:col-span-2 bg-gradient-to-br from-sky-950/40 via-indigo-950/30 to-transparent border border-sky-500/15 p-8 rounded-2xl relative overflow-hidden group">
-                                                    <div className="relative z-10 flex flex-col items-center py-4">
-                                                        <div className="text-[10px] font-bold text-sky-400/60 tracking-[0.35em] uppercase mb-4">BERS 能效得分</div>
-                                                        <div className="text-[7rem] font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/30 leading-none mb-6">{result.score}</div>
-                                                        <div className="flex items-center gap-8 bg-black/30 backdrop-blur-xl px-8 py-5 rounded-2xl border border-white/5">
-                                                            <div className="text-center border-r border-white/5 pr-8"><div className="text-3xl font-black text-white">{result.grade}</div><div className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mt-1">能效等級</div></div>
-                                                            <div className="text-center"><div className="text-2xl font-bold text-zinc-100">{typeof result.euiAdj === 'number' ? result.euiAdj.toFixed(2) : result.euiAdj}</div><div className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mt-1">EUI adj</div></div>
-                                                        </div>
-                                                    </div>
+                                            <div className="space-y-6">
+                                                <div className="flex justify-end">
+                                                    <Button onClick={calculate} size="sm" className="h-8 px-4 text-[12px] rounded-lg bg-sky-900/60 hover:bg-sky-800/80 text-sky-100 border border-sky-500/20 transition-all">
+                                                        <Activity className="w-3 h-3 mr-2" /> 重新計算
+                                                    </Button>
                                                 </div>
-                                                <div className="space-y-3">
-                                                    <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-4">能效基準值 (EUI)</p>
-                                                    <div className="flex justify-between items-center p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/10"><span className="text-xs text-emerald-400">EUImin (1+級)</span><span className="font-mono text-sm text-emerald-300">{result.benchmarks.min}</span></div>
-                                                    <div className="flex justify-between items-center p-3 rounded-xl bg-sky-500/5 border border-sky-500/10"><span className="text-xs text-sky-400">EUIg / GB基準</span><span className="font-mono text-sm text-sky-300">{result.benchmarks.g}</span></div>
-                                                    <div className="flex justify-between items-center p-3 rounded-xl bg-zinc-700/20 border border-white/[0.05]"><span className="text-xs text-zinc-400">EUIm 中位值</span><span className="font-mono text-sm text-zinc-300">{result.benchmarks.m}</span></div>
-                                                    <div className="flex justify-between items-center p-3 rounded-xl bg-red-500/5 border border-red-500/10"><span className="text-xs text-red-400">EUImax (7級)</span><span className="font-mono text-sm text-red-300">{result.benchmarks.max}</span></div>
-                                                    <div className="flex justify-between items-center p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.04]"><span className="text-xs text-zinc-500">EUI' 主設備</span><span className="font-mono text-xs text-zinc-400">{result.euiPrime}</span></div>
-                                                    <div className="pt-1 space-y-1.5">
-                                                        <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">免評估設備 (kWh/yr)</p>
-                                                        <div className="flex justify-between text-xs px-1"><span className="text-zinc-600">Et 電梯</span><span className="font-mono text-zinc-500">{result.Et}</span></div>
-                                                        <div className="flex justify-between text-xs px-1"><span className="text-zinc-600">Ep 揚水</span><span className="font-mono text-zinc-500">{result.Ep}</span></div>
-                                                        <div className="flex justify-between text-xs px-1"><span className="text-zinc-600">Eh 熱水</span><span className="font-mono text-zinc-500">{result.Eh}</span></div>
-                                                    </div>
-                                                    <div className="pt-2"><Button variant="outline" className="w-full rounded-xl border-white/5 bg-white/[0.03] hover:bg-white/[0.06] text-zinc-400 h-11 text-sm font-medium transition-all"><Save size={14} className="mr-2" /> 下載報告</Button></div>
-                                                </div>
+                                                <SummaryReport result={result} basic={basic} />
                                             </div>
                                         ) : (
-                                            <div className="flex flex-col items-center justify-center h-[320px] border border-dashed border-white/5 rounded-2xl hover:border-sky-500/15 transition-all duration-500">
-                                                <div className="p-4 rounded-full bg-sky-500/5 mb-4 hover:scale-110 transition-transform duration-500"><Activity size={28} className="text-sky-500/20" /></div>
-                                                <p className="text-zinc-600 text-sm mb-5 font-light">尚未產生計算數據</p>
-                                                <Button onClick={calculate} className="rounded-full bg-sky-900 text-white font-bold h-10 px-8 hover:bg-sky-800 border border-sky-500/20 shadow-[0_8px_20px_rgba(7,89,133,0.3)]">點此開始分析</Button>
+                                            <div className="flex flex-col items-center justify-center h-[400px] border border-dashed border-white/5 rounded-2xl hover:border-sky-500/15 transition-all duration-500">
+                                                <div className="p-4 rounded-full bg-sky-500/5 mb-4 hover:scale-110 transition-transform duration-500">
+                                                    <BarChart3 size={32} className="text-sky-500/20" />
+                                                </div>
+                                                <h3 className="text-zinc-400 font-bold mb-2">尚未產生能效評估</h3>
+                                                <p className="text-zinc-600 text-[13px] mb-8 max-w-xs text-center">請先完成基本資料、用電量與分區空間等數據填寫，或開啟 Demo 模式快速預覽。</p>
+                                                <Button onClick={calculate} className="rounded-full bg-sky-900 text-white font-bold h-11 px-10 hover:bg-sky-800 border border-sky-500/20 shadow-[0_8px_20px_rgba(7,89,133,0.3)] transition-all active:scale-95">點此開始分析</Button>
                                             </div>
                                         )}
                                     </motion.div>

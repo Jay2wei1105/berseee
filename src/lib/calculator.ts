@@ -76,27 +76,36 @@ export function calculateBERSe(input: AssessmentInput): CalculationResult {
         ? (input.totalElectricityTE + input.totalElectricityTE_y2) / 2
         : input.totalElectricityTE;
 
-    // Reliability Check
+    // Reliability Check (Match Excel: 變動率 = |Y1-Y2|/max(Y1,Y2))
     let monthlyMaxVar = 0;
-    if (input.monthlyData && input.monthlyData.length > 0) {
-        const avg = TE / 12;
-        if (avg > 0) {
-            const variations = input.monthlyData.map(d => {
-                const val = (Number(d.y1) + (d.y2 ? Number(d.y2) : Number(d.y1))) / (d.y2 ? 2 : 1);
-                return Math.abs(val - avg) / avg;
-            });
-            monthlyMaxVar = Math.max(...variations);
+    if (input.monthlyData && input.monthlyData.length > 0 && input.totalElectricityTE_y2) {
+        const monthlyVars = input.monthlyData
+            .map(d => {
+                const y1 = Number(d.y1) || 0;
+                const y2 = Number(d.y2) || 0;
+                const maxVal = Math.max(y1, y2);
+                if (maxVal <= 0) return null; // Skip months with no data
+                return Math.abs(y1 - y2) / maxVal;
+            })
+            .filter((v): v is number => v !== null);
+
+        if (monthlyVars.length > 0) {
+            monthlyMaxVar = Math.max(...monthlyVars);
         }
     }
+
+    const teY1 = input.totalElectricityTE;
+    const teY2 = input.totalElectricityTE_y2 || 0;
+    const yearlyVar = (teY1 > 0 && teY2 > 0)
+        ? Math.abs(teY1 - teY2) / Math.max(teY1, teY2)
+        : 0;
 
     const reliability: ReliabilityCheck = {
         totalTE: TE,
         monthlyMaxVariation: monthlyMaxVar,
-        yearlyVariation: input.totalElectricityTE_y2
-            ? Math.abs(input.totalElectricityTE - input.totalElectricityTE_y2) / Math.max(input.totalElectricityTE, 1)
-            : 0,
+        yearlyVariation: yearlyVar,
         isMonthlyValid: monthlyMaxVar < 0.5,
-        isYearlyValid: input.totalElectricityTE_y2 ? (Math.abs(input.totalElectricityTE - input.totalElectricityTE_y2) / Math.max(input.totalElectricityTE, 1) < 0.15) : true,
+        isYearlyValid: teY2 > 0 ? yearlyVar < 0.15 : true,
     };
 
     // ── 3. 評估分區加權計算 ──
