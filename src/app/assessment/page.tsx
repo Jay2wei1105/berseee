@@ -578,11 +578,15 @@ export default function AssessmentPage() {
             })),
         };
 
-        setResult(calculateBERSe(input));
+        const res = calculateBERSe(input);
+        setResult(res);
+        localStorage.setItem("BERS2_LATEST_RESULT", JSON.stringify(res));
+        setIsSubmitting(false);
+        setActiveTab("result");
     };
 
 
-    const handleComplete = async () => { calculate(); setIsSubmitting(true); setTimeout(() => setIsSubmitting(false), 1500); };
+    const handleComplete = async () => { setIsSubmitting(true); calculate(); };
 
     return (
         <div className="flex-1 relative selection:bg-sky-800/30 pt-8 md:pt-12 pb-24">

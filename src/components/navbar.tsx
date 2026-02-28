@@ -34,7 +34,8 @@ export function Navbar() {
     const navItems = [
         { id: "/", label: "Home", desc: "Delta Energy" },
         { id: "/assessment", label: "BERS Assessment", desc: "Start Evaluation" },
-        { id: "/dashboard", label: "Analytics", desc: "Visual Reports" },
+        { id: "/analytics", label: "Neural Analytics", desc: "Cyber Visualization" },
+        { id: "/dashboard", label: "Executive Info", desc: "Summary" },
     ];
 
     return (
