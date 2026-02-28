@@ -76,6 +76,37 @@ export interface AssessmentInput {
     // 設備
     elevators: ElevatorItem[];
     escalators?: EscalatorItem[];
+
+    // 每月用電資料 (檢驗信賴度用)
+    monthlyData?: Array<{ m: number; y1: string; y2: string }>;
+}
+
+export interface ZoneDetail {
+    name: string;
+    code: string;
+    area: number;
+    aeui: number;
+    leui: number;
+    eeui: number;
+    ur: number;
+    sori: number;
+    energy: number;
+}
+
+export interface ExemptZoneDetail {
+    name: string;
+    code: string;
+    area: number;
+    formula: string;
+    energy: number;
+}
+
+export interface ReliabilityCheck {
+    totalTE: number;
+    monthlyMaxVariation: number;
+    yearlyVariation: number;
+    isMonthlyValid: boolean;
+    isYearlyValid: boolean;
 }
 
 export interface CalculationResult {
@@ -84,15 +115,27 @@ export interface CalculationResult {
     euiPrime: number;   // 主設備耗電密度 EUI'
     score: number;      // 能效得分 SCORE
     grade: string;      // 能效等級
+
     // 中間值（供對照 Excel）
     Et: number;         // 電梯耗電 kWh/yr
     Ep: number;         // 揚水耗電 kWh/yr
     Eh: number;         // 熱水耗電 kWh/yr
+    EN: number;         // 免評估用電 kWh/yr
     deltaEui: number;   // △EUI
+
+    AFe: number;        // 評估樓板面積
+    AFn: number;        // 免評估樓板面積
+    UR: number;         // 城鄉係數
+
     benchmarks: {
         min: number;    // EUImin
         g: number;      // EUIg (GB基準 = 0.8×中位值)
         m: number;      // EUIm (中位值)
         max: number;    // EUImax
     };
+
+    // 詳細報表數據
+    reliability: ReliabilityCheck;
+    energyZoneDetails: ZoneDetail[];
+    exemptZoneDetails: ExemptZoneDetail[];
 }
