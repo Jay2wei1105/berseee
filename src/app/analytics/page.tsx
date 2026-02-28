@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
     Activity, Zap, Shield, Cpu, LayoutDashboard,
     ArrowUpRight, AlertCircle, Terminal, Info,
-    BarChart, PieChart, Database, HardDrive, Wifi, Server
+    BarChart, PieChart, Database, HardDrive, Wifi, Server, Target
 } from "lucide-react";
 import {
     ResponsiveContainer, AreaChart, Area, XAxis, YAxis,
@@ -16,15 +16,15 @@ import {
 
 // --- Types ---
 interface CalculationResult {
-    totalTE: number;
-    totalEN: number;
-    b0: number;
-    berse: number;
-    berseLabel: string;
-    bech: number;
-    bechLabel: string;
+    teui: number;
+    euiAdj: number;
+    euiPrime: number;
+    score: number;
     grade: string;
-    isDiamond: boolean;
+    EN: number;
+    Et: number;
+    Ep: number;
+    Eh: number;
     reliability: {
         totalTE: number;
         monthlyMaxVariation: number;
@@ -32,8 +32,15 @@ interface CalculationResult {
         isMonthlyValid: boolean;
         isYearlyValid: boolean;
     };
+    benchmarks: {
+        min: number;
+        g: number;
+        m: number;
+        max: number;
+    };
     energyZoneDetails: any[];
     exemptZoneDetails: any[];
+    isDiamond?: boolean;
 }
 
 // --- Icons / Components ---
@@ -156,7 +163,7 @@ export default function AnalyticsPage() {
                                     <div className="mt-12 w-full space-y-4 font-mono text-[10px]">
                                         <div className="flex justify-between items-center text-zinc-500 p-2 bg-white/5 rounded">
                                             <span>BERSe INDEX</span>
-                                            <span className="text-cyan-400 font-bold">{data.berse.toFixed(2)}</span>
+                                            <span className="text-cyan-400 font-bold">{data.euiAdj.toFixed(2)}</span>
                                         </div>
                                         <div className="flex justify-between items-center text-zinc-500 p-2 bg-white/5 rounded">
                                             <span>DIAMOND ELIGIBILITY</span>
@@ -194,7 +201,7 @@ export default function AnalyticsPage() {
                                 <CyberCard title="Actual Consumption (TE)" icon={Zap}>
                                     <div className="py-2">
                                         <div className="text-3xl font-bold font-mono text-zinc-100 flex items-baseline gap-2">
-                                            {data.totalTE.toLocaleString()}
+                                            {data.reliability.totalTE.toLocaleString()}
                                             <span className="text-xs text-zinc-500 font-sans">kWh/yr</span>
                                         </div>
                                         <div className="w-full h-1 bg-zinc-900 rounded-full mt-4 overflow-hidden">
@@ -209,7 +216,7 @@ export default function AnalyticsPage() {
                                 <CyberCard title="Design Baseline (B0)" icon={Target}>
                                     <div className="py-2">
                                         <div className="text-3xl font-bold font-mono text-zinc-100 flex items-baseline gap-2">
-                                            {data.b0.toLocaleString()}
+                                            {data.benchmarks.m.toLocaleString()}
                                             <span className="text-xs text-zinc-500 font-sans">kWh/yr</span>
                                         </div>
                                         <div className="w-full h-1 bg-zinc-900 rounded-full mt-4 overflow-hidden">
@@ -307,7 +314,7 @@ export default function AnalyticsPage() {
                                                 <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
                                                 <span className="text-zinc-500">{z.code}</span>
                                             </div>
-                                            <span className="text-zinc-300">{((z.eeui / data.totalTE) * 100).toFixed(1)}%</span>
+                                            <span className="text-zinc-300">{((z.eeui / data.reliability.totalTE) * 100).toFixed(1)}%</span>
                                         </div>
                                     ))}
                                 </div>
