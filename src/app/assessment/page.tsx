@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowLeft, Building2, Zap, LayoutDashboard, Settings2, Droplets, Activity, BarChart3, Save, Plus, Map, ShieldOff, FileText, Download, ChevronRight, RotateCcw } from "lucide-react";
+import { ArrowRight, ArrowLeft, Building2, Zap, LayoutDashboard, Settings2, Droplets, Activity, BarChart3, Save, Plus, Map, ShieldOff, FileText, Download, ChevronRight, RotateCcw, Cloud, CheckCircle2, Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,6 +15,9 @@ import { euiTable } from "@/lib/eui-table";
 import { exemptEuiTable } from '@/lib/exempt-eui-table';
 import { calculateBERSe } from "@/lib/calculator";
 import { AssessmentInput, CalculationResult } from "@/lib/types";
+import { supabase } from "@/lib/supabaseClient";
+import { CloudProjectManager } from "@/components/CloudProjectManager";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 
 const steps = [
     { id: "basic", label: "基本資料", icon: Building2 },
@@ -398,6 +401,116 @@ export default function AssessmentPage() {
     const [activeTab, setActiveTab] = useState("basic");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [result, setResult] = useState<CalculationResult | null>(null);
+    const [cloudProjects, setCloudProjects] = useState<any[]>([]);
+    const [selectedProjectId, setSelectedProjectId] = useState<string>("");
+    const [isCloudSaving, setIsCloudSaving] = useState(false);
+    const [showSaveToast, setShowSaveToast] = useState(false);
+    const [isProjectsExpanded, setIsProjectsExpanded] = useState(true);
+    const [isListMounted, setIsListMounted] = useState(false);
+
+    const fetchCloudProjects = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            const { data, error } = await supabase
+                .from('assessments')
+                .select('*')
+                .order('updated_at', { ascending: false });
+
+            if (!error && data) {
+                setCloudProjects(data);
+            }
+        } else {
+            setCloudProjects([]);
+        }
+    };
+
+    useEffect(() => {
+        fetchCloudProjects();
+
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+            fetchCloudProjects();
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    const handleSelectCloudProject = (id: string) => {
+        const project = cloudProjects.find(p => p.id === id);
+        if (project) {
+            setSelectedProjectId(id);
+            loadDemoData(project.input_data);
+        }
+    };
+
+    const saveToCloud = async (customResult?: any) => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) return;
+
+        setIsCloudSaving(true);
+        const formData = {
+            basic,
+            monthly,
+            spaces,
+            exemptSpaces,
+            ac: acList,
+            lt: ltList,
+            el: elList,
+            water,
+            op
+        };
+
+        const { error } = await supabase
+            .from('assessments')
+            .upsert({
+                user_id: session.user.id,
+                building_name: basic.companyName || '新建築專案',
+                input_data: formData,
+                result_data: customResult || result || {}, // Fallback to empty object to satisfy NOT NULL constraint
+                updated_at: new Date().toISOString(),
+            }, {
+                onConflict: 'user_id,building_name'
+            });
+
+        setIsCloudSaving(false);
+        if (error) {
+            console.error("Cloud save failed:", error.message);
+            alert("雲端存檔失敗：" + error.message);
+        } else {
+            console.log("Assessment synced to cloud.");
+            fetchCloudProjects(); // Refresh dropdown
+            setShowSaveToast(true);
+            setTimeout(() => setShowSaveToast(false), 3000);
+        }
+    };
+
+    const handleDeleteProject = async (e: React.MouseEvent, id: string, name: string) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!confirm(`確定要刪除「${name}」的紀錄嗎？此動作無法復原。`)) return;
+
+        const { error } = await supabase
+            .from('assessments')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            alert("刪除失敗：" + error.message);
+        } else {
+            if (selectedProjectId === id) {
+                setSelectedProjectId("");
+                handleResetForm(false); // Silent reset
+            }
+            fetchCloudProjects();
+        }
+    };
+
+    const handleResetForm = (showConfirm = true) => {
+        if (showConfirm && !confirm("確定要清除目前表單並開始新專案嗎？")) return;
+        resetToEmpty();
+        setSelectedProjectId("");
+    };
 
     // Basic info
     const [basic, setBasic] = useState({
@@ -468,6 +581,7 @@ export default function AssessmentPage() {
         setEl(data.el || data.elList || []);
         setExemptSpaces(data.exemptSpaces || []);
         setWater(data.water);
+        if (data.op) setOp(data.op);
     };
 
     const resetToEmpty = () => {
@@ -581,10 +695,12 @@ export default function AssessmentPage() {
         const res = calculateBERSe(input);
         setResult(res);
         localStorage.setItem("BERS2_LATEST_RESULT", JSON.stringify(res));
+
+        saveToCloud(res);
+
         setIsSubmitting(false);
         setActiveTab("result");
     };
-
 
     const handleComplete = async () => { setIsSubmitting(true); calculate(); };
 
@@ -608,6 +724,57 @@ export default function AssessmentPage() {
                             );
                         })}
                     </div>
+
+                    {/* Cloud Projects Expandable List */}
+                    {cloudProjects.length > 0 && (
+                        <div className="mt-8 space-y-2">
+                            <div className="flex items-center justify-between px-2 mb-1">
+                                <button
+                                    onClick={() => setIsProjectsExpanded(!isProjectsExpanded)}
+                                    className="flex items-center gap-2 group cursor-pointer"
+                                >
+                                    <label className="text-[12px] font-black text-sky-500/50 uppercase tracking-[0.2em] italic group-hover:text-sky-400 transition-colors cursor-pointer">您的建築紀錄</label>
+                                    <ChevronRight size={10} className={`text-sky-500/30 transition-transform duration-300 ${isProjectsExpanded ? "rotate-90" : ""}`} />
+                                </button>
+                                <button onClick={() => handleResetForm()} className="text-zinc-600 hover:text-sky-400 transition-colors">
+                                    <Plus size={14} />
+                                </button>
+                            </div>
+
+                            <AnimatePresence>
+                                {isProjectsExpanded && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: "auto", opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        className="overflow-hidden space-y-1"
+                                    >
+                                        <div className="max-h-[300px] overflow-y-auto pr-1 space-y-1 custom-scrollbar">
+                                            {cloudProjects.map((p) => {
+                                                const isSelected = selectedProjectId === p.id;
+                                                return (
+                                                    <div key={p.id} className="relative group">
+                                                        <button
+                                                            onClick={() => handleSelectCloudProject(p.id)}
+                                                            className={`w-full text-left px-3 py-2 rounded-xl text-[12px] font-medium transition-all flex items-center justify-between ${isSelected ? "bg-sky-500/10 text-sky-400 border border-sky-500/20" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03] border border-transparent"}`}
+                                                        >
+                                                            <span className="truncate pr-6">{p.building_name}</span>
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => handleDeleteProject(e, p.id, p.building_name)}
+                                                            className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 opacity-0 group-hover:opacity-100 hover:bg-red-500/20 hover:text-red-400 rounded-md transition-all z-20"
+                                                        >
+                                                            <Trash2 size={12} />
+                                                        </button>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    )}
                 </motion.div>
 
                 {/* Right Content */}
@@ -1021,6 +1188,25 @@ export default function AssessmentPage() {
                                 )}
 
                             </AnimatePresence>
+
+                            {/* Save Toast Notification */}
+                            <AnimatePresence>
+                                {showSaveToast && (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                                        className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[110] pointer-events-none"
+                                    >
+                                        <div className="bg-emerald-500/10 backdrop-blur-xl border border-emerald-500/20 px-4 py-2 rounded-full flex items-center gap-2 shadow-2xl shadow-emerald-500/10">
+                                            <div className="bg-emerald-500 rounded-full p-0.5">
+                                                <CheckCircle2 className="w-3 h-3 text-emerald-950" />
+                                            </div>
+                                            <span className="text-[12px] font-bold text-emerald-400 tracking-wide">進度已儲存至雲端</span>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
 
                         {/* Bottom Navigation */}
@@ -1029,8 +1215,24 @@ export default function AssessmentPage() {
                                 className={`h-9 px-4 text-sm font-medium text-zinc-500 hover:text-zinc-200 hover:bg-white/5 rounded-lg transition-all ${currentIndex === 0 ? "invisible" : ""}`}>
                                 <ArrowLeft className="mr-2 w-4 h-4" /> 返回上一步
                             </Button>
+
+                            <Button
+                                onClick={() => saveToCloud()}
+                                variant="ghost"
+                                size="sm"
+                                disabled={isCloudSaving}
+                                className="h-9 px-4 text-sm font-medium text-zinc-500 hover:text-sky-400 hover:bg-sky-500/5 rounded-lg transition-all"
+                            >
+                                {isCloudSaving ? (
+                                    <Loader2 className="mr-2 w-4 h-4 animate-spin text-sky-500" />
+                                ) : (
+                                    <Save className="mr-2 w-4 h-4" />
+                                )}
+                                {isCloudSaving ? "存檔中..." : "暫存進度"}
+                            </Button>
+
                             {currentIndex === steps.length - 2 ? (
-                                <Button variant="ghost" onClick={handleComplete} disabled={isSubmitting} className="h-9 px-4 text-sm font-medium text-zinc-500 hover:text-zinc-200 hover:bg-white/5 rounded-lg transition-all disabled:opacity-50">
+                                <Button variant="ghost" onClick={handleComplete} disabled={isSubmitting} className="h-9 px-4 text-sm font-medium text-zinc-500 hover:text-emerald-400 hover:bg-emerald-500/5 rounded-lg transition-all disabled:opacity-50">
                                     {isSubmitting ? "計算中..." : <><Activity className="mr-2 w-4 h-4" />開始能效計算</>}
                                 </Button>
                             ) : currentIndex === steps.length - 1 ? (

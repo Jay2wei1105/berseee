@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowRight } from "lucide-react";
+import { AuthModal } from "@/components/AuthModal";
 
 export function Navbar() {
     const pathname = usePathname();
@@ -81,6 +82,8 @@ export function Navbar() {
                                 </Link>
                             );
                         })}
+                        <div className="h-4 w-[1px] bg-white/10 mx-2" />
+                        <AuthModal />
                     </nav>
 
                     {/* Mobile Toggle */}

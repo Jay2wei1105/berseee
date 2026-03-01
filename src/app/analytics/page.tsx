@@ -13,6 +13,9 @@ import {
     PieChart as RePie, Pie, Cell, Radar, RadarChart,
     PolarGrid, PolarAngleAxis, PolarRadiusAxis
 } from "recharts";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/lib/supabaseClient";
+import { Save, ChevronDown, CheckCircle2 } from "lucide-react";
 
 // --- Types ---
 interface CalculationResult {
@@ -46,26 +49,23 @@ interface CalculationResult {
 // --- Icons / Components ---
 const CyberCard = ({ children, title, icon: Icon, className = "" }: any) => (
     <div className={`relative group ${className}`}>
-        {/* Glow Border */}
-        <div className="absolute -inset-[1px] bg-gradient-to-r from-cyan-500/50 via-magenta-500/20 to-cyan-500/50 rounded-lg blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        {/* Subtle Glow Border */}
+        <div className="absolute -inset-[1px] bg-gradient-to-r from-sky-500/20 via-blue-500/10 to-sky-500/20 rounded-2xl blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-        <div className="relative bg-[#0a0a0c]/90 border border-white/5 backdrop-blur-3xl rounded-lg p-5 overflow-hidden">
-            {/* Scanline Effect */}
-            <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.02),rgba(0,255,0,0.01),rgba(0,0,255,0.02))] bg-[length:100%_2px,3px_100%] z-50"></div>
-
-            <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-3">
-                <div className="flex items-center gap-2">
-                    {Icon && <Icon className="w-4 h-4 text-cyan-400" />}
-                    <h3 className="text-xs font-bold tracking-[0.2em] text-cyan-500/80 uppercase">{title}</h3>
+        <div className="relative bg-zinc-900/40 border border-white/5 backdrop-blur-xl rounded-2xl p-6 overflow-hidden shadow-2xl">
+            <div className="flex items-center justify-between mb-5 border-b border-white/5 pb-4">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-sky-500/10 text-sky-400">
+                        {Icon && <Icon className="w-4 h-4" />}
+                    </div>
+                    <h3 className="text-xs font-black tracking-[0.2em] text-zinc-400 uppercase group-hover:text-sky-400 transition-colors">{title}</h3>
                 </div>
-                <div className="w-2 h-2 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)] bg-green-500 animate-pulse" />
+                <div className="flex gap-1">
+                    <div className="w-1 h-1 rounded-full bg-sky-500/40" />
+                    <div className="w-1 h-1 rounded-full bg-sky-500/20" />
+                </div>
             </div>
             {children}
-
-            {/* HUD Decoration */}
-            <div className="absolute bottom-1 right-1 flex gap-0.5">
-                {[1, 2, 3].map(i => <div key={i} className="w-0.5 h-0.5 bg-white/20" />)}
-            </div>
         </div>
     </div>
 );
@@ -73,9 +73,30 @@ const CyberCard = ({ children, title, icon: Icon, className = "" }: any) => (
 export default function AnalyticsPage() {
     const [data, setData] = useState<CalculationResult | null>(null);
     const [mounted, setMounted] = useState(false);
+    const [projects, setProjects] = useState<any[]>([]);
+    const [selectedId, setSelectedId] = useState<string>("");
+
+    const fetchCalculatedProjects = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            // Filter: result_data cannot be empty or null
+            const { data, error } = await supabase
+                .from('assessments')
+                .select('*')
+                .order('updated_at', { ascending: false });
+
+            if (!error && data) {
+                // Client-side filter to ensure it has actual result content (like a grade)
+                const completed = data.filter(p => p.result_data && p.result_data.grade);
+                setProjects(completed);
+            }
+        }
+    };
 
     useEffect(() => {
         setMounted(true);
+        fetchCalculatedProjects();
+
         const stored = localStorage.getItem("BERS2_LATEST_RESULT");
         if (stored) {
             try {
@@ -85,6 +106,14 @@ export default function AnalyticsPage() {
             }
         }
     }, []);
+
+    const handleSelect = (id: string) => {
+        const p = projects.find(proj => proj.id === id);
+        if (p && p.result_data) {
+            setSelectedId(id);
+            setData(p.result_data);
+        }
+    };
 
     if (!mounted) return null;
 
@@ -100,11 +129,38 @@ export default function AnalyticsPage() {
     const COLORS = ['#00f3ff', '#ff00ff', '#39ff14', '#f1c40f'];
 
     return (
-        <div className="min-h-screen bg-[#050507] text-[#e0e0e0] font-sans selection:bg-cyan-500/30 overflow-x-hidden pt-20 px-6 pb-20">
-            {/* Background Grid & Scanlines */}
-            <div className="fixed inset-0 pointer-events-none z-0 opacity-20">
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] brightness-50 contrast-150"></div>
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+        <div className="min-h-screen bg-transparent text-foreground font-sans selection:bg-sky-500/30 overflow-x-hidden pt-10 px-6 pb-20 relative z-10">
+            {/* Project Selector - Floating Header */}
+            <div className="max-w-7xl mx-auto mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="space-y-1">
+                    <h1 className="text-2xl font-black text-white tracking-widest uppercase italic">Neural Analytics</h1>
+                    <p className="text-[10px] text-zinc-500 font-bold tracking-[0.3em] uppercase">Advanced Building Energy Performance System</p>
+                </div>
+
+                {projects.length > 0 && (
+                    <div className="flex items-center gap-3 bg-zinc-900/40 border border-white/5 p-1 rounded-2xl backdrop-blur-xl">
+                        <div className="pl-4 pr-2 py-2 border-r border-white/5">
+                            <Database className="w-3.5 h-3.5 text-sky-500" />
+                        </div>
+                        <Select value={selectedId} onValueChange={handleSelect}>
+                            <SelectTrigger className="w-[240px] h-10 bg-transparent border-none text-zinc-200 hover:text-sky-400 transition-colors focus:ring-0">
+                                <SelectValue placeholder="選擇已完成的評估紀錄..." />
+                            </SelectTrigger>
+                            <SelectContent className="bg-zinc-950 border-white/10 text-white rounded-xl shadow-2xl">
+                                {projects.map((p) => (
+                                    <SelectItem key={p.id} value={p.id} className="focus:bg-sky-500/10 focus:text-sky-400 cursor-pointer">
+                                        <div className="flex flex-col gap-0.5">
+                                            <span className="font-bold text-xs">{p.building_name}</span>
+                                            <span className="text-[9px] text-zinc-500 opacity-70">
+                                                等級: {p.result_data.grade} 級 | {new Date(p.updated_at).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                )}
             </div>
 
             <div className="relative z-10 max-w-[1600px] mx-auto space-y-8">
@@ -117,8 +173,8 @@ export default function AnalyticsPage() {
                                 <Cpu className="text-cyan-400 animate-pulse" />
                             </div>
                             <div>
-                                <h1 className="text-3xl font-black tracking-tighter italic flex items-baseline gap-2">
-                                    NEURAL <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-magenta-500">ANALYTICS</span>
+                                <h1 className="text-3xl font-black tracking-tighter italic flex items-baseline gap-2 text-white">
+                                    NEURAL <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600">ANALYTICS</span>
                                     <span className="text-[10px] font-mono text-zinc-600 tracking-widest uppercase ml-4">v2.0. bers-protocol</span>
                                 </h1>
                                 <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest mt-1">
@@ -234,7 +290,7 @@ export default function AnalyticsPage() {
                             <CyberCard title="Division Node Matrix" icon={Terminal}>
                                 <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                                     {data.energyZoneDetails.map((zone, idx) => (
-                                        <div key={idx} className="group/item relative bg-white/[0.02] border border-white/5 p-4 rounded-lg hover:border-cyan-500/30 transition-all">
+                                        <div key={idx} className="group/item relative bg-white/[0.02] border border-white/5 p-4 rounded-lg hover:border-sky-500/30 transition-all">
                                             <div className="flex items-center justify-between mb-3">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-8 h-8 rounded bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-[10px] font-bold text-cyan-500">
