@@ -41,7 +41,7 @@ const CyberCard = ({ children, title, icon: Icon, className = "" }: any) => (
         {/* Dynamic Border (Visible on hover) */}
         <div className="absolute inset-0 border border-cyan-500/20 group-hover:border-cyan-500/40 rounded-2xl transition-all duration-300 opacity-0 group-hover:opacity-100 shadow-[inset_0_0_20px_rgba(6,182,212,0.05)]" />
 
-        <div className="relative h-full flex-1 flex flex-col bg-[#08080a]/80 border border-white/[0.01] backdrop-blur-3xl rounded-2xl p-6 overflow-hidden shadow-2xl transition-colors duration-500 group-hover:bg-[#0c0c0e]/95">
+        <div className="relative h-full flex-1 flex flex-col bg-[#08080a]/80 border border-white/[0.01] backdrop-blur-3xl rounded-2xl p-6 shadow-2xl transition-colors duration-500 group-hover:bg-[#0c0c0e]/95">
             {/* HUD Scanline Effect on hover */}
             <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(6,182,212,0.02)_50%,transparent_100%)] bg-[length:100%_4px] opacity-0 group-hover:opacity-100 pointer-events-none" />
 
@@ -60,7 +60,7 @@ const CyberCard = ({ children, title, icon: Icon, className = "" }: any) => (
                 </div>
             </div>
 
-            <div className="relative z-10 flex-1 flex flex-col overflow-hidden">
+            <div className="relative z-10 flex-1 flex flex-col">
                 {children}
             </div>
         </div>
@@ -197,7 +197,7 @@ export default function AnalyticsPage() {
                                 <CyberCard title="BERSe 核心評級" icon={Shield}>
                                     <div className="relative flex flex-col items-center justify-center py-10">
                                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,243,255,0.08)_0%,transparent_70%)] animate-pulse" />
-                                        <h2 className="text-[7rem] font-black italic text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-600 leading-none z-10 drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] select-none">
+                                        <h2 className="text-[7.5rem] font-black italic text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-zinc-700 leading-[1.1] z-10 drop-shadow-[0_0_40px_rgba(255,255,255,0.25)] select-none">
                                             {data.grade}
                                         </h2>
                                         <div className="mt-4 px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold text-zinc-500 tracking-[0.3em] uppercase z-10 tracking-widest transition-all hover:text-white hover:border-white/20 cursor-default">
