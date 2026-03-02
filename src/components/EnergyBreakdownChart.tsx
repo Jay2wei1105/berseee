@@ -52,12 +52,13 @@ export const EnergyBreakdownChart: React.FC<EnergyBreakdownChartProps> = ({ data
                         </Pie>
                         <Tooltip
                             contentStyle={{
-                                backgroundColor: '#09090b',
-                                border: '1px solid #27272a',
+                                backgroundColor: 'var(--card)',
+                                borderColor: 'var(--border)',
                                 borderRadius: '8px',
                                 fontSize: '10px'
                             }}
-                            itemStyle={{ color: '#fff' }}
+                            itemStyle={{ color: 'var(--foreground)' }}
+                            labelStyle={{ color: 'var(--muted-foreground)' }}
                             formatter={(value: any) => [`${Number(value).toLocaleString()} kWh/yr`, '耗電量']}
                         />
                     </PieChart>
@@ -65,8 +66,8 @@ export const EnergyBreakdownChart: React.FC<EnergyBreakdownChartProps> = ({ data
 
                 {/* Center text for percentage of largest slice or total label */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span className="text-[10px] text-zinc-500 font-mono tracking-widest uppercase">Total</span>
-                    <span className="text-lg font-bold text-white font-mono">{total > 1000 ? (total / 1000).toFixed(1) + 'k' : total}</span>
+                    <span className="text-[10px] text-muted-foreground/60 font-mono tracking-widest uppercase">Total</span>
+                    <span className="text-lg font-bold text-foreground font-mono">{total > 1000 ? (total / 1000).toFixed(1) + 'k' : total}</span>
                 </div>
             </div>
 
@@ -76,7 +77,7 @@ export const EnergyBreakdownChart: React.FC<EnergyBreakdownChartProps> = ({ data
                     const percentage = (item.value / total) * 100;
                     return (
                         <div key={idx} className="group relative">
-                            <div className="flex items-center justify-between py-2 px-3 bg-white/[0.02] hover:bg-white/[0.05] rounded-lg transition-all duration-300">
+                            <div className="flex items-center justify-between py-2 px-3 bg-secondary/20 hover:bg-secondary/40 rounded-lg transition-all duration-300">
                                 <div className="flex items-center gap-3 flex-1 min-w-0">
                                     <div
                                         className="w-4 h-4 rounded-sm flex-none shadow-sm"
@@ -84,11 +85,11 @@ export const EnergyBreakdownChart: React.FC<EnergyBreakdownChartProps> = ({ data
                                     />
                                     <div className="flex flex-col flex-1 min-w-0">
                                         <div className="flex justify-between items-baseline">
-                                            <span className="text-[11px] text-zinc-300 font-medium truncate">{item.name}</span>
-                                            <span className="text-[11px] text-white font-bold font-mono ml-4">{percentage.toFixed(0)}%</span>
+                                            <span className="text-[11px] text-muted-foreground font-medium truncate">{item.name}</span>
+                                            <span className="text-[11px] text-foreground font-bold font-mono ml-4">{percentage.toFixed(0)}%</span>
                                         </div>
                                         {/* Background track for bar */}
-                                        <div className="w-full h-1 bg-zinc-800/50 rounded-full mt-1.5 overflow-hidden">
+                                        <div className="w-full h-1 bg-secondary rounded-full mt-1.5 overflow-hidden">
                                             {/* Colored bar progress */}
                                             <div
                                                 className="h-full transition-all duration-1000 ease-out rounded-full"
@@ -108,9 +109,9 @@ export const EnergyBreakdownChart: React.FC<EnergyBreakdownChartProps> = ({ data
             </div>
 
             {/* Bottom Insight */}
-            <div className="w-full mt-6 pt-4 border-t border-white/5 flex items-center justify-between px-2">
-                <span className="text-[10px] text-zinc-600 font-mono uppercase tracking-tighter">Peak Analysis:</span>
-                <span className="text-[10px] font-bold text-cyan-500 tracking-tight uppercase">
+            <div className="w-full mt-6 pt-4 border-t border-border flex items-center justify-between px-2">
+                <span className="text-[10px] text-muted-foreground/60 font-mono uppercase tracking-tighter">Peak Analysis:</span>
+                <span className="text-[10px] font-bold text-primary tracking-tight uppercase">
                     {chartData[0]?.name.split(' (')[0]} 主導能耗
                 </span>
             </div>

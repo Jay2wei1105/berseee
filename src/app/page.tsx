@@ -30,7 +30,7 @@ export default function Home() {
         className="w-full max-w-7xl mx-auto px-6 md:px-12 flex flex-col items-start text-left mt-10 md:mt-20 relative z-10"
       >
         <motion.div variants={item} className="mb-8">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-zinc-900/80 border border-white/10 text-xs font-medium text-zinc-300 tracking-wide backdrop-blur-sm shadow-sm">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-card/80 border border-border text-xs font-medium text-muted-foreground tracking-wide backdrop-blur-sm shadow-sm">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
             DELTA ENERGY · 建築能效專家
           </div>
@@ -38,7 +38,7 @@ export default function Home() {
 
         <motion.h1
           variants={item}
-          className="text-5xl md:text-6xl lg:text-[5.5rem] font-bold tracking-tight text-white leading-[1.1] mb-8 font-serif"
+          className="text-5xl md:text-6xl lg:text-[5.5rem] font-bold tracking-tight text-foreground leading-[1.1] mb-8 font-serif"
         >
           從 BERS 評級，<br />
           到 <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-400">淨零實踐</span> 的完整路徑
@@ -48,9 +48,9 @@ export default function Home() {
           variants={item}
           className="pl-4 border-l-2 border-blue-500/50 mb-12"
         >
-          <p className="text-lg md:text-xl text-zinc-300 max-w-2xl leading-relaxed font-light">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl leading-relaxed font-light">
             取得 BERS 標章只是第一步。<br className="hidden md:block" />
-            台達能源整合 <strong className="text-white font-medium">AI 診斷</strong> 與 <strong className="text-white font-medium">EMS 智慧調控</strong>，<br className="hidden md:block" />
+            台達能源整合 <strong className="text-foreground font-medium">AI 診斷</strong> 與 <strong className="text-foreground font-medium">EMS 智慧調控</strong>，<br className="hidden md:block" />
             為您提供從「建築健檢」到「設備優化」的一站式節能方案。
           </p>
         </motion.div>
@@ -64,8 +64,8 @@ export default function Home() {
               </span>
             </Button>
           </Link>
-          <Button size="lg" variant="outline" className="w-full sm:w-auto h-12 px-8 text-[15px] tracking-wide rounded-full bg-zinc-900/50 hover:bg-zinc-800 border-zinc-700 hover:border-zinc-500 flex items-center gap-2 text-zinc-300 transition-all duration-300 backdrop-blur-sm">
-            <Clock size={16} className="text-zinc-400" />
+          <Button size="lg" variant="outline" className="w-full sm:w-auto h-12 px-8 text-[15px] tracking-wide rounded-full bg-secondary/50 hover:bg-secondary border-border flex items-center gap-2 text-foreground transition-all duration-300 backdrop-blur-sm">
+            <Clock size={16} className="text-muted-foreground" />
             預約專家諮詢
           </Button>
         </motion.div>
@@ -107,7 +107,7 @@ export default function Home() {
         viewport={{ once: true }}
         className="w-full max-w-7xl mx-auto px-6 md:px-12 text-center mt-32 relative z-10"
       >
-        <p className="text-xs text-zinc-600 font-light">&copy; 2025 Delta Energy Services.</p>
+        <p className="text-xs text-muted-foreground font-light">&copy; 2025 Delta Energy Services.</p>
       </motion.div>
     </div>
   );
@@ -122,21 +122,22 @@ function FeatureCard({ icon, iconBg, title, desc }: { icon: React.ReactNode; ico
   return (
     <motion.div
       variants={item}
-      className="group p-8 flex flex-col gap-6 bg-zinc-900/60 hover:bg-zinc-800/80 border border-white/5 hover:border-white/10 rounded-2xl transition-all duration-300 hover:-translate-y-2 backdrop-blur-md relative overflow-hidden cursor-default"
+      className="group p-8 flex flex-col gap-6 bg-card border border-border hover:border-primary/20 rounded-2xl transition-all duration-300 hover:-translate-y-2 backdrop-blur-md relative overflow-hidden cursor-default shadow-sm"
     >
       {/* Subtle hover gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-      <div className="flex items-center gap-4 relative z-10">
+      <div className="items-center gap-4 relative z-10 flex">
         <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${iconBg}`}>
           {icon}
         </div>
-        <h3 className="text-lg font-bold text-zinc-100 tracking-wide font-sans">{title}</h3>
+        <h3 className="text-lg font-bold text-foreground tracking-wide font-sans">{title}</h3>
       </div>
 
       <div className="relative z-10">
-        <p className="text-[14px] text-zinc-400 leading-relaxed font-light">{desc}</p>
+        <p className="text-[14px] text-muted-foreground leading-relaxed font-light">{desc}</p>
       </div>
     </motion.div>
   );
 }
+

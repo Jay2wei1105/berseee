@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowRight } from "lucide-react";
 import { AuthModal } from "@/components/AuthModal";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export function Navbar() {
     const pathname = usePathname();
@@ -54,11 +55,14 @@ export function Navbar() {
                     }`}
             >
                 <div className="flex items-center justify-between px-6 py-4">
-                    <Link href="/" className="flex items-center gap-3 z-10 group">
-                        <span className="font-bold text-xl tracking-tight text-foreground">
-                            DSE<span className="font-light text-muted-foreground">.bers</span>
-                        </span>
-                    </Link>
+                    <div className="flex items-center gap-2">
+                        <ModeToggle />
+                        <Link href="/" className="flex items-center gap-3 z-10 group">
+                            <span className="font-bold text-xl tracking-tight text-foreground">
+                                DSE<span className="font-light text-muted-foreground">.bers</span>
+                            </span>
+                        </Link>
+                    </div>
 
                     {/* Desktop Nav */}
                     <nav className="hidden md:flex items-center gap-8">

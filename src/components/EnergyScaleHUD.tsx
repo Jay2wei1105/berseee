@@ -26,9 +26,9 @@ export const EnergyScaleHUD: React.FC<EnergyScaleHUDProps> = ({ data }) => {
         <div className="relative w-full h-full flex flex-col pt-2 pb-1 text-[11px] font-mono">
             {/* Header Labels - Prominent */}
             <div className="grid grid-cols-[100px_1fr_100px] gap-2 mb-3 items-center text-[10px]">
-                <div className="text-zinc-500 font-bold uppercase tracking-widest text-center opacity-60">EUI Threshold</div>
-                <div className="text-zinc-500 font-bold uppercase tracking-widest text-center opacity-60">Efficiency Grade</div>
-                <div className="text-zinc-500 font-bold uppercase tracking-widest text-center italic opacity-60">EUI* Indicator</div>
+                <div className="text-muted-foreground/60 font-bold uppercase tracking-widest text-center">EUI Threshold</div>
+                <div className="text-muted-foreground/60 font-bold uppercase tracking-widest text-center">Efficiency Grade</div>
+                <div className="text-muted-foreground/60 font-bold uppercase tracking-widest text-center italic">EUI* Indicator</div>
             </div>
 
             {/* Content Area - Filling available space with thicker bars */}
@@ -40,8 +40,8 @@ export const EnergyScaleHUD: React.FC<EnergyScaleHUDProps> = ({ data }) => {
                     return (
                         <div key={t.grade} className="grid grid-cols-[100px_1fr_100px] gap-2 items-stretch flex-1 group">
                             {/* EUI Threshold Column */}
-                            <div className="flex items-center justify-end pr-4 border-r border-white/10 text-zinc-400">
-                                <span className="text-[10px] font-bold group-hover:text-sky-400 transition-colors">
+                            <div className="flex items-center justify-end pr-4 border-r border-border text-muted-foreground/80">
+                                <span className="text-[10px] font-bold group-hover:text-primary transition-colors">
                                     {i === thresholds.length - 1 ? `> ${thresholds[i - 1].eui.toFixed(1)}` : `≤ ${t.eui.toFixed(1)}`}
                                 </span>
                             </div>
@@ -67,8 +67,8 @@ export const EnergyScaleHUD: React.FC<EnergyScaleHUDProps> = ({ data }) => {
                                 {/* Energy Saving Optimization Target */}
                                 {currentEui > t.eui && (
                                     <div className="flex-1 flex flex-col justify-center animate-in fade-in slide-in-from-left-2 duration-700">
-                                        <div className="text-[8px] text-zinc-500 font-black uppercase tracking-tighter opacity-70 mb-0.5">Required Savings</div>
-                                        <div className="text-[10px] text-amber-400 font-mono font-bold drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]">
+                                        <div className="text-[8px] text-muted-foreground/60 font-black uppercase tracking-tighter mb-0.5">Required Savings</div>
+                                        <div className="text-[10px] text-amber-600 dark:text-amber-400 font-mono font-bold">
                                             -{Math.round((currentEui - t.eui) * (data.AFe || 0)).toLocaleString()} <span className="text-[8px] opacity-60">kWh/yr</span>
                                         </div>
                                     </div>
@@ -76,7 +76,7 @@ export const EnergyScaleHUD: React.FC<EnergyScaleHUDProps> = ({ data }) => {
 
                                 {/* Grade Threshold Lines */}
                                 {t.grade === '1' && (
-                                    <div className="absolute -top-4 right-0 whitespace-nowrap text-[8px] text-zinc-600 font-bold border-r border-zinc-700 pr-2 h-3 flex items-center">
+                                    <div className="absolute -top-4 right-0 whitespace-nowrap text-[8px] text-muted-foreground/60 font-bold border-r border-border pr-2 h-3 flex items-center">
                                         NEAR ZERO TARGET
                                     </div>
                                 )}
@@ -90,8 +90,8 @@ export const EnergyScaleHUD: React.FC<EnergyScaleHUDProps> = ({ data }) => {
                                         animate={{ opacity: 1, x: 0 }}
                                         className="relative flex items-center"
                                     >
-                                        <div className="w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-r-[10px] border-r-cyan-400 z-10 mr-[-2px] drop-shadow-lg" />
-                                        <div className="bg-gradient-to-r from-cyan-400 to-blue-500 text-white px-3 py-1 rounded shadow-[0_0_20px_rgba(6,182,212,0.5)] border border-white/20">
+                                        <div className="w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-r-[10px] border-r-primary z-10 mr-[-2px]" />
+                                        <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground px-3 py-1 rounded shadow-lg border border-primary/20">
                                             <div className="text-[11px] font-black leading-none">{currentEui.toFixed(1)}</div>
                                             <div className="text-[7px] font-bold uppercase tracking-tighter opacity-80 mt-0.5">Your EUI*</div>
                                         </div>
@@ -104,12 +104,12 @@ export const EnergyScaleHUD: React.FC<EnergyScaleHUDProps> = ({ data }) => {
             </div>
 
             {/* Signature Footer */}
-            <div className="mt-4 p-3 bg-white/[0.03] border border-white/5 rounded-lg flex justify-between items-center">
-                <div className="text-zinc-500 font-black uppercase tracking-[0.3em] text-[8px] opacity-60">EUI Digital Signature</div>
+            <div className="mt-4 p-3 bg-secondary/20 border border-border rounded-lg flex justify-between items-center">
+                <div className="text-muted-foreground/40 font-black uppercase tracking-[0.3em] text-[8px]">EUI Digital Signature</div>
                 <div className="flex gap-6 text-[9px]">
-                    <span className="text-zinc-500 font-bold uppercase tracking-tighter">MIN <span className="text-cyan-400 ml-1">{min.toFixed(1)}</span></span>
-                    <span className="text-zinc-500 font-bold uppercase tracking-tighter">GB <span className="text-amber-400 ml-1">{g.toFixed(1)}</span></span>
-                    <span className="text-zinc-500 font-bold uppercase tracking-tighter">MAX <span className="text-rose-400 ml-1">{max.toFixed(1)}</span></span>
+                    <span className="text-muted-foreground/60 font-bold uppercase tracking-tighter">MIN <span className="text-primary ml-1">{min.toFixed(1)}</span></span>
+                    <span className="text-muted-foreground/60 font-bold uppercase tracking-tighter">GB <span className="text-amber-600 dark:text-amber-400 ml-1">{g.toFixed(1)}</span></span>
+                    <span className="text-muted-foreground/60 font-bold uppercase tracking-tighter">MAX <span className="text-red-500 ml-1">{max.toFixed(1)}</span></span>
                 </div>
             </div>
         </div>

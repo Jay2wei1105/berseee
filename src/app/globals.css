@@ -51,47 +51,73 @@
   /* Minimalist luxury radii */
   --radius: 0.5rem;
 
-  /* Core palette: Sophisticated Dark Japanese Aesthetics */
+  /* Light Theme: Milk White & Beige Aesthetics */
+  --background: #ffffff;
+  /* pure white */
+  --foreground: #18181b;
+  /* zinc 900 */
+
+  --card: rgba(245, 245, 240, 0.8);
+  /* milk white / light beige (more opaque) */
+  --card-foreground: #18181b;
+
+  --popover: #ffffff;
+  --popover-foreground: #18181b;
+
+  --primary: #075985;
+  /* sky 800 */
+  --primary-foreground: #ffffff;
+
+  --secondary: #f4f4f5;
+  /* zinc 100 */
+  --secondary-foreground: #18181b;
+
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  /* zinc 500 */
+
+  --accent: #f4f4f5;
+  --accent-foreground: #18181b;
+
+  --destructive: #ef4444;
+  --border: rgba(0, 0, 0, 0.08);
+  --input: rgba(0, 0, 0, 0.05);
+  --ring: #075985;
+
+  --chart-1: #075985;
+  --chart-2: #38bdf8;
+  --chart-3: #a1a1aa;
+  --chart-4: #52525b;
+  --chart-5: #e4e4e7;
+}
+
+.dark {
+  /* Dark Theme: Sophisticated Dark Japanese Aesthetics (Previously default) */
   --background: #09090b;
-  /* Zinc 950 - Extremely deep dark for negative space */
   --foreground: #fafafa;
-  /* Off-white for stark contrast */
 
   --card: rgba(24, 24, 27, 0.4);
-  /* Zinc 900 with extreme transparency for glass effect */
   --card-foreground: #fafafa;
 
   --popover: #18181b;
   --popover-foreground: #fafafa;
 
-  /* Accents */
   --primary: #075985;
-  /* Sky 800 - requested premium deep blue */
   --primary-foreground: #ffffff;
 
   --secondary: #27272a;
-  /* Zinc 800 - quiet surfaces */
   --secondary-foreground: #e4e4e7;
-  /* Zinc 200 */
 
   --muted: #18181b;
-  /* Zinc 900 for subdued background layers */
   --muted-foreground: #a1a1aa;
-  /* Zinc 400 */
 
   --accent: #27272a;
-  /* Zinc 800 */
   --accent-foreground: #fafafa;
-  /* Bright white accent text */
 
   --destructive: #7f1d1d;
-  /* Deep red for high-end look */
   --border: rgba(255, 255, 255, 0.1);
-  /* Very subtle hairline borders */
   --input: rgba(255, 255, 255, 0.05);
-  /* Deep transparent input */
   --ring: rgba(7, 89, 133, 0.5);
-  /* Sky 800 focus ring */
 
   --chart-1: #075985;
   --chart-2: #38bdf8;
@@ -110,13 +136,14 @@
 }
 
 
+
 @layer base {
   * {
     @apply border-border outline-ring/20;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground selection:bg-primary/20 selection:text-primary;
   }
 
   h1,

@@ -155,32 +155,32 @@ export function FloorPlanTool({ licenseArea, onAddEnergyArea, onAddExemptArea }:
     };
 
     return (
-        <div className="flex flex-col gap-3 h-full">
+        <div className="flex flex-col gap-3">
             {/* Toolbar */}
             <div className="flex flex-wrap items-center gap-2">
-                <button onClick={() => fileRef.current?.click()} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-zinc-400 hover:text-white hover:bg-white/[0.07] transition-all text-xs">
+                <button onClick={() => fileRef.current?.click()} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary border border-border text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-all text-xs">
                     <Upload size={11} /> {img ? "重新上傳" : "上傳平面圖"}
                 </button>
                 <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
-                <div className="flex items-center gap-1 bg-zinc-800/60 border border-white/[0.06] rounded-lg p-1">
+                <div className="flex items-center gap-1 bg-secondary border border-border rounded-lg p-1">
                     {(["rect", "polygon"] as DrawMode[]).map(m => (
                         <button key={m} onClick={() => { setMode(m); polyPtsRef.current = []; setPolyPts([]); }}
-                            className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${mode === m ? "bg-sky-900/80 text-sky-100 border border-sky-500/30" : "text-zinc-500 hover:text-zinc-300"}`}>
+                            className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-all ${mode === m ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
                             {m === "rect" ? "矩形" : "多邊形"}
                         </button>
                     ))}
                 </div>
                 <button onClick={() => { setRegions([]); polyPtsRef.current = []; setPolyPts([]); }}
-                    className="p-1.5 rounded-lg border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all" title="清除所有">
+                    className="p-1.5 rounded-lg border border-red-500/20 bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-all" title="清除所有">
                     <Trash2 size={12} />
                 </button>
             </div>
 
             {/* 面積加總說明 */}
             {licenseArea > 0 && regions.length > 0 && (
-                <div className="flex items-center justify-between text-[11px] px-2 py-1.5 bg-sky-950/40 border border-sky-500/15 rounded-lg">
-                    <span className="text-sky-400/70">各區域面積比例加總 =</span>
-                    <span className="font-mono text-sky-300 font-semibold">{licenseArea} m²</span>
+                <div className="flex items-center justify-between text-[11px] px-2 py-1.5 bg-primary/5 border border-primary/20 rounded-lg">
+                    <span className="text-primary/70">各區域面積比例加總 =</span>
+                    <span className="font-mono text-primary font-semibold">{licenseArea} m²</span>
                 </div>
             )}
             {licenseArea <= 0 && regions.length > 0 && (
@@ -196,16 +196,16 @@ export function FloorPlanTool({ licenseArea, onAddEnergyArea, onAddExemptArea }:
             )}
 
             {/* Canvas */}
-            <div className="relative rounded-xl overflow-hidden border border-white/[0.06] flex-1" style={{ minHeight: 240 }}>
+            <div className="relative rounded-xl overflow-hidden border border-border bg-[#09090b] shadow-inner" style={{ aspectRatio: `${CANVAS_W}/${CANVAS_H}`, width: "100%", maxHeight: "320px" }}>
                 <canvas ref={canvasRef} width={CANVAS_W} height={CANVAS_H}
                     style={{ width: "100%", height: "100%", display: "block", cursor: mode === "rect" ? "crosshair" : "cell" }}
                     onMouseDown={onMouseDown} onMouseMove={onMouseMove} onMouseUp={onMouseUp}
                     onClick={onClick} onDoubleClick={onDblClick} />
                 {!img && (
                     <div className="absolute inset-0 flex flex-col gap-2 items-center justify-center pointer-events-none">
-                        <ImageIcon size={28} className="text-zinc-700" />
-                        <p className="text-zinc-600 text-xs">上傳平面圖後可在此繪製分區</p>
-                        <p className="text-zinc-700 text-[11px]">未上傳亦可直接在格線上繪製</p>
+                        <ImageIcon size={28} className="text-muted-foreground/40" />
+                        <p className="text-muted-foreground text-xs">上傳平面圖後可在此繪製分區</p>
+                        <p className="text-muted-foreground/60 text-[11px]">未上傳亦可直接在格線上繪製</p>
                     </div>
                 )}
             </div>
@@ -214,19 +214,19 @@ export function FloorPlanTool({ licenseArea, onAddEnergyArea, onAddExemptArea }:
             {regions.length > 0 && (
                 <div className="flex flex-col gap-1.5">
                     <div className="flex items-center justify-between">
-                        <p className="text-[11px] text-zinc-500 font-semibold uppercase tracking-wider">已繪製區域</p>
-                        <p className="text-[10px] text-zinc-600">面積依比例動態分配</p>
+                        <p className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">已繪製區域</p>
+                        <p className="text-[10px] text-muted-foreground/60">面積依比例動態分配</p>
                     </div>
                     <div className="flex flex-col gap-1 max-h-36 overflow-y-auto pr-0.5">
                         {regions.map(r => {
                             const realArea = getRealArea(r.pixelArea);
                             const pct = totalPixelArea > 0 ? ((r.pixelArea / totalPixelArea) * 100).toFixed(1) : "0";
                             return (
-                                <div key={r.id} className="flex items-center gap-2 bg-zinc-800/40 border border-white/[0.05] rounded-lg px-3 py-1.5">
+                                <div key={r.id} className="flex items-center gap-2 bg-secondary/40 border border-border rounded-lg px-3 py-1.5">
                                     <div className="w-2 h-2 rounded-sm shrink-0" style={{ backgroundColor: r.color }} />
-                                    <span className="text-xs text-zinc-300 flex-1 truncate">{r.label}</span>
-                                    <span className="text-[10px] text-zinc-600 shrink-0">{pct}%</span>
-                                    <span className="text-xs font-mono text-zinc-300 shrink-0 font-semibold">
+                                    <span className="text-xs text-foreground/80 flex-1 truncate">{r.label}</span>
+                                    <span className="text-[10px] text-muted-foreground/60 shrink-0">{pct}%</span>
+                                    <span className="text-xs font-mono text-foreground shrink-0 font-semibold">
                                         {realArea > 0 ? `${realArea.toFixed(1)} m²` : "-- m²"}
                                     </span>
                                     <div className="flex items-center gap-1 shrink-0">
@@ -235,12 +235,12 @@ export function FloorPlanTool({ licenseArea, onAddEnergyArea, onAddExemptArea }:
                                             <Plus size={8} /> 耗能
                                         </button>
                                         <button onClick={() => onAddExemptArea(realArea)} disabled={realArea <= 0}
-                                            className="flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded-md bg-zinc-500/10 border border-zinc-500/20 text-zinc-400 hover:bg-zinc-500/20 transition-all disabled:opacity-30 shrink-0">
+                                            className="flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded-md bg-secondary border border-border text-muted-foreground hover:bg-secondary/80 hover:text-foreground transition-all disabled:opacity-30 shrink-0">
                                             <Plus size={8} /> 免評
                                         </button>
                                     </div>
                                     <button onClick={() => setRegions(prev => prev.filter(x => x.id !== r.id))}
-                                        className="text-zinc-700 hover:text-red-400 transition-colors shrink-0 ml-1">
+                                        className="text-muted-foreground/40 hover:text-red-500 transition-colors shrink-0 ml-1">
                                         <Trash2 size={11} />
                                     </button>
                                 </div>
@@ -249,8 +249,8 @@ export function FloorPlanTool({ licenseArea, onAddEnergyArea, onAddExemptArea }:
                     </div>
                     {/* 加總驗證 */}
                     <div className="flex items-center justify-between px-1 text-[11px]">
-                        <span className="text-zinc-600">合計</span>
-                        <span className={`font-mono font-semibold ${licenseArea > 0 ? "text-emerald-400" : "text-zinc-500"}`}>
+                        <span className="text-muted-foreground/60">合計</span>
+                        <span className={`font-mono font-semibold ${licenseArea > 0 ? "text-primary" : "text-muted-foreground/40"}`}>
                             {licenseArea > 0
                                 ? `${regions.reduce((s, r) => s + getRealArea(r.pixelArea), 0).toFixed(1)} m² = ${licenseArea} m²`
                                 : `${regions.length} 個區域`}

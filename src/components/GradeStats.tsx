@@ -33,25 +33,30 @@ export const GradeStats: React.FC<GradeStatsProps> = ({ data }) => {
                         margin={{ top: 20, right: 40, left: 10, bottom: 20 }}
                     >
                         <XAxis type="number" hide domain={[0, 'dataMax + 2']} />
+                        <div className="YAxis_tick_fix px-0">
+                            {/* Tick color fix via CSS variable inherited from parent if possible, but recharts is tricky. 
+                        Best to use a class and handle via globals.css or inline-style with theme check */}
+                        </div>
                         <YAxis
                             dataKey="grade"
                             type="category"
                             axisLine={false}
                             tickLine={false}
                             fontSize={12}
-                            tick={{ fill: '#e4e4e7', fontWeight: '900' }}
+                            tick={{ fill: 'currentColor', fontWeight: '900' }}
+                            className="text-muted-foreground"
                             width={40}
                         />
                         <Tooltip
-                            cursor={{ fill: 'white', fillOpacity: 0.05 }}
+                            cursor={{ fill: 'currentColor', fillOpacity: 0.05 }}
                             content={({ active, payload }: any) => {
                                 if (active && payload && payload.length) {
                                     return (
-                                        <div className="bg-zinc-950/90 backdrop-blur-md border border-white/10 p-3 rounded-lg shadow-2xl text-[10px]">
-                                            <div className="text-zinc-500 uppercase tracking-[0.2em] mb-1">Grade {payload[0].payload.grade}</div>
+                                        <div className="bg-card/95 backdrop-blur-md border border-border p-3 rounded-lg shadow-2xl text-[10px]">
+                                            <div className="text-muted-foreground uppercase tracking-[0.2em] mb-1">Grade {payload[0].payload.grade}</div>
                                             <div className="flex items-center gap-2">
-                                                <div className={`w-2 h-2 rounded-full ${payload[0].payload.grade === currentGrade ? 'bg-cyan-400' : 'bg-zinc-600'}`} />
-                                                <span className="text-white font-black text-xs">{payload[0].value} Buildings</span>
+                                                <div className={`w-2 h-2 rounded-full ${payload[0].payload.grade === currentGrade ? 'bg-cyan-500' : 'bg-muted-foreground'}`} />
+                                                <span className="text-foreground font-black text-xs">{payload[0].value} Buildings</span>
                                             </div>
                                         </div>
                                     );
@@ -115,7 +120,7 @@ export const GradeStats: React.FC<GradeStatsProps> = ({ data }) => {
                                     <motion.div
                                         animate={{ x: [0, 4, 0] }}
                                         transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                                        className="bg-cyan-500 text-black px-3 py-1.5 rounded-sm text-[10px] font-black uppercase shadow-[0_0_25px_rgba(6,182,212,0.7),inset_0_0_10px_rgba(255,255,255,0.3)] whitespace-nowrap"
+                                        className="bg-cyan-500 text-primary-foreground px-3 py-1.5 rounded-sm text-[10px] font-black uppercase shadow-[0_0_25px_rgba(6,182,212,0.7),inset_0_0_10px_rgba(255,255,255,0.3)] whitespace-nowrap"
                                     >
                                         本 棟 建 築
                                     </motion.div>
@@ -127,10 +132,10 @@ export const GradeStats: React.FC<GradeStatsProps> = ({ data }) => {
                 })}
             </div>
 
-            <div className="mt-4 flex flex-col gap-2 text-[10px] text-zinc-500 font-mono px-6 border-t border-white/5 pt-5">
+            <div className="mt-4 flex flex-col gap-2 text-[10px] text-muted-foreground font-mono px-6 border-t border-border pt-5">
                 <div className="flex items-center justify-between">
-                    <span className="text-zinc-600 tracking-widest uppercase">Statistical Context</span>
-                    <span className="text-white bg-white/5 px-2 py-0.5 rounded font-bold">114 SAMPLES</span>
+                    <span className="text-muted-foreground/60 tracking-widest uppercase font-bold">Statistical Context</span>
+                    <span className="text-foreground bg-secondary px-2 py-0.5 rounded font-bold">114 SAMPLES</span>
                 </div>
             </div>
         </div>

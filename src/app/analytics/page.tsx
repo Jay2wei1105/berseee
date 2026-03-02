@@ -41,22 +41,22 @@ const CyberCard = ({ children, title, icon: Icon, className = "" }: any) => (
         {/* Dynamic Border (Visible on hover) */}
         <div className="absolute inset-0 border border-cyan-500/20 group-hover:border-cyan-500/40 rounded-2xl transition-all duration-300 opacity-0 group-hover:opacity-100 shadow-[inset_0_0_20px_rgba(6,182,212,0.05)]" />
 
-        <div className="relative h-full flex-1 flex flex-col bg-[#08080a]/80 border border-white/[0.01] backdrop-blur-3xl rounded-2xl p-6 shadow-2xl transition-colors duration-500 group-hover:bg-[#0c0c0e]/95">
+        <div className="relative h-full flex-1 flex flex-col bg-card border border-border backdrop-blur-3xl rounded-2xl p-6 shadow-2xl transition-colors duration-500 group-hover:bg-card/90">
             {/* HUD Scanline Effect on hover */}
             <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,rgba(6,182,212,0.02)_50%,transparent_100%)] bg-[length:100%_4px] opacity-0 group-hover:opacity-100 pointer-events-none" />
 
-            <div className="flex items-center justify-between mb-5 border-b border-white/5 pb-4 relative z-10 flex-none">
+            <div className="flex items-center justify-between mb-5 border-b border-border pb-4 relative z-10 flex-none">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 group-hover:scale-110 group-hover:bg-cyan-500/20 transition-all duration-300">
+                    <div className="p-2 rounded-lg bg-cyan-500/10 text-cyan-500 group-hover:scale-110 group-hover:bg-cyan-500/20 transition-all duration-300">
                         {Icon && <Icon className="w-4 h-4" />}
                     </div>
-                    <h3 className="text-xs font-black tracking-[0.2em] text-zinc-500 uppercase group-hover:text-cyan-400 group-hover:tracking-[0.25em] transition-all duration-300">
+                    <h3 className="text-xs font-black tracking-[0.2em] text-muted-foreground uppercase group-hover:text-cyan-500 group-hover:tracking-[0.25em] transition-all duration-300">
                         {title}
                     </h3>
                 </div>
                 <div className="flex gap-1.5 items-center">
                     <div className="w-1 h-1 rounded-full bg-cyan-500/40 animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
-                    <div className="w-1 h-1 rounded-full bg-zinc-800 group-hover:bg-cyan-900 transition-colors" />
+                    <div className="w-1 h-1 rounded-full bg-border group-hover:bg-cyan-900 transition-colors" />
                 </div>
             </div>
 
@@ -94,6 +94,19 @@ export default function AnalyticsPage() {
     useEffect(() => {
         setMounted(true);
         fetchCalculatedProjects();
+
+        // Listen for auth state changes to refresh projects list immediately
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            console.log("Auth event in Analytics:", event);
+            fetchCalculatedProjects();
+
+            // If signed out, reset selection
+            if (event === 'SIGNED_OUT' || !session) {
+                handleReset();
+            }
+        });
+
+        return () => subscription.unsubscribe();
     }, []);
 
     const handleSelect = (id: string) => {
@@ -135,11 +148,11 @@ export default function AnalyticsPage() {
                             <Cpu className="text-sky-400 animate-pulse" />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-black tracking-tighter italic flex items-center gap-6 text-white uppercase leading-none">
+                            <h1 className="text-3xl font-black tracking-tighter italic flex items-center gap-6 text-foreground uppercase leading-none">
                                 <span className="flex items-baseline gap-2">
-                                    建築 <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600 font-black">能效分析</span>
+                                    建築 <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-blue-700 font-black">能效分析</span>
                                 </span>
-                                <span className="hidden xl:inline-block text-[10px] font-mono text-zinc-500 tracking-[0.3em] uppercase border-l border-white/10 pl-6">
+                                <span className="hidden xl:inline-block text-[10px] font-mono text-muted-foreground tracking-[0.3em] uppercase border-l border-border pl-6">
                                     Advanced Building Energy Performance System
                                 </span>
                             </h1>
@@ -148,16 +161,16 @@ export default function AnalyticsPage() {
 
                     <div className="flex flex-1 items-center justify-end gap-6">
                         {projects.length > 0 && (
-                            <div className="flex items-center gap-3 bg-zinc-900/40 border border-white/5 p-1 rounded-2xl backdrop-blur-xl">
-                                <div className="pl-4 pr-2 py-2 border-r border-white/5">
-                                    <Database className="w-3.5 h-3.5 text-sky-500" />
+                            <div className="flex items-center gap-3 bg-secondary/50 border border-border p-1 rounded-2xl backdrop-blur-xl">
+                                <div className="pl-4 pr-2 py-2 border-r border-border">
+                                    <Database className="w-3.5 h-3.5 text-sky-600" />
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Select value={selectedId} onValueChange={handleSelect}>
-                                        <SelectTrigger className="w-[300px] h-10 bg-transparent border-none text-zinc-200 hover:text-sky-400 transition-colors focus:ring-0">
+                                        <SelectTrigger className="w-[300px] h-10 bg-transparent border-none text-foreground hover:text-sky-600 transition-colors focus:ring-0 font-bold">
                                             <SelectValue placeholder="選擇已完成的評估紀錄..." />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-zinc-950 border-white/10 text-white rounded-xl shadow-2xl">
+                                        <SelectContent className="bg-popover border-border text-popover-foreground rounded-xl shadow-2xl">
                                             {projects.map((p) => (
                                                 <SelectItem key={p.id} value={p.id} className="focus:bg-sky-500/10 focus:text-sky-400 cursor-pointer">
                                                     <div className="flex flex-col gap-0.5">
@@ -176,7 +189,7 @@ export default function AnalyticsPage() {
                                             initial={{ scale: 0, opacity: 0 }}
                                             animate={{ scale: 1, opacity: 1 }}
                                             onClick={handleReset}
-                                            className="mr-2 p-2 rounded-lg bg-white/5 text-zinc-500 hover:text-white hover:bg-white/10 transition-all border border-white/5"
+                                            className="mr-2 p-2 rounded-lg bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-all border border-border"
                                             title="清空選擇"
                                         >
                                             <RotateCcw size={14} />
@@ -197,10 +210,10 @@ export default function AnalyticsPage() {
                                 <CyberCard title="BERSe 核心評級" icon={Shield}>
                                     <div className="relative flex flex-col items-center justify-center py-10">
                                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,243,255,0.08)_0%,transparent_70%)] animate-pulse" />
-                                        <h2 className="text-[7.5rem] font-black italic text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-zinc-700 leading-[1.1] z-10 drop-shadow-[0_0_40px_rgba(255,255,255,0.25)] select-none">
+                                        <h2 className="text-[7.5rem] font-black italic text-transparent bg-clip-text bg-gradient-to-b from-foreground via-foreground to-muted-foreground/50 leading-[1.1] z-10 select-none">
                                             {data.grade}
                                         </h2>
-                                        <div className="mt-4 px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold text-zinc-500 tracking-[0.3em] uppercase z-10 tracking-widest transition-all hover:text-white hover:border-white/20 cursor-default">
+                                        <div className="mt-4 px-3 py-1 bg-secondary border border-border rounded-full text-[9px] font-bold text-muted-foreground tracking-[0.3em] uppercase z-10 tracking-widest transition-all hover:text-foreground hover:border-border cursor-default">
                                             Efficiency Level
                                         </div>
                                     </div>
@@ -275,16 +288,16 @@ export default function AnalyticsPage() {
                         >
                             <div className="relative">
                                 <div className="absolute -inset-4 bg-sky-500/10 rounded-full blur-xl animate-pulse" />
-                                <Cpu size={80} className="text-zinc-800 relative z-10" />
+                                <Cpu size={80} className="text-muted-foreground/20 relative z-10" />
                             </div>
                         </motion.div>
                         <div className="text-center space-y-4 max-w-md">
-                            <h2 className="text-zinc-200 font-black text-xl uppercase tracking-[0.4em] italic">Systems Idle</h2>
-                            <p className="text-zinc-500 text-xs font-mono uppercase tracking-[0.15em] leading-loose">
+                            <h2 className="text-foreground font-black text-xl uppercase tracking-[0.4em] italic">Systems Idle</h2>
+                            <p className="text-muted-foreground text-xs font-mono uppercase tracking-[0.15em] leading-loose font-bold">
                                 Please select a building project from the database terminal above to initialize performance analytics.
                             </p>
                             {projects.length === 0 && (
-                                <p className="text-sky-500/60 text-[10px] font-bold uppercase tracking-widest pt-4">
+                                <p className="text-sky-600/60 text-[10px] font-bold uppercase tracking-widest pt-4">
                                     No evaluation records found in cloud storage.
                                 </p>
                             )}

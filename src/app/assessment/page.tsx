@@ -28,19 +28,19 @@ const steps = [
     { id: "operation", label: "營運率資料", icon: Activity },
 ];
 
-const INP = "h-12 w-full rounded-xl bg-zinc-800/50 border border-white/[0.06] text-zinc-100 placeholder:text-zinc-600 text-sm px-4 focus:outline-none focus:border-sky-500/40 focus:bg-zinc-800 transition-all shadow-none";
-const INPSM = "h-9 w-full rounded-lg bg-zinc-800/50 border border-white/[0.06] text-zinc-200 placeholder:text-zinc-700 text-sm px-3 focus:outline-none focus:border-sky-500/30 transition-all shadow-none";
-const SEL = "h-12 w-full rounded-xl bg-zinc-800/50 border border-white/[0.06] text-zinc-100 text-sm px-4 focus:border-sky-500/40 shadow-none transition-all data-[state=open]:border-sky-500/40";
-const SELSM = "h-9 w-full rounded-lg bg-zinc-800/50 border border-white/[0.06] text-zinc-200 text-sm px-3 shadow-none transition-all focus:border-sky-500/30";
-const SC = "rounded-xl bg-zinc-900 border border-white/10 shadow-xl";
-const LBL = "text-[13px] text-zinc-400 mb-2 block";
-const LBLSM = "text-[11px] text-zinc-500 mb-1.5 block";
+const INP = "h-12 w-full rounded-xl bg-secondary/50 border border-border text-foreground placeholder:text-muted-foreground/60 text-sm px-4 focus:outline-none focus:border-primary/40 focus:bg-secondary transition-all shadow-none";
+const INPSM = "h-9 w-full rounded-lg bg-secondary/50 border border-border text-foreground placeholder:text-muted-foreground/50 text-sm px-3 focus:outline-none focus:border-primary/30 transition-all shadow-none";
+const SEL = "h-12 w-full rounded-xl bg-secondary/50 border border-border text-foreground text-sm px-4 focus:border-primary/40 shadow-none transition-all data-[state=open]:border-primary/40";
+const SELSM = "h-9 w-full rounded-lg bg-secondary/50 border border-border text-foreground text-sm px-3 shadow-none transition-all focus:border-primary/30";
+const SC = "rounded-xl bg-popover border border-border shadow-xl";
+const LBL = "text-[13px] text-muted-foreground mb-2 block font-medium";
+const LBLSM = "text-[11px] text-muted-foreground/80 mb-1.5 block font-medium";
 
 function SectionHeader({ icon: Icon, title }: { icon: any; title: string }) {
     return (
         <div className="flex items-center gap-2 mb-6">
-            <div className="p-1.5 rounded-md bg-emerald-500/10 text-emerald-400"><Icon size={14} /></div>
-            <h2 className="text-sm font-bold tracking-wider text-emerald-400 uppercase">{title}</h2>
+            <div className="p-1.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"><Icon size={14} /></div>
+            <h2 className="text-sm font-bold tracking-wider text-emerald-600 dark:text-emerald-400 uppercase">{title}</h2>
         </div>
     );
 }
@@ -48,9 +48,9 @@ function SectionHeader({ icon: Icon, title }: { icon: any; title: string }) {
 function SubHead({ title, onAdd }: { title: string; onAdd?: () => void }) {
     return (
         <div className="flex items-center justify-between mb-3">
-            <p className="text-[14px] font-semibold text-zinc-200">{title}</p>
+            <p className="text-[14px] font-semibold text-foreground">{title}</p>
             {onAdd && (
-                <Button onClick={onAdd} variant="outline" size="sm" className="h-7 px-2.5 text-[11px] rounded-lg border-white/10 bg-white/[0.02] text-zinc-500 hover:text-white hover:bg-white/[0.06]">
+                <Button onClick={onAdd} variant="outline" size="sm" className="h-7 px-2.5 text-[11px] rounded-lg border-border bg-secondary/50 text-muted-foreground hover:text-foreground hover:bg-secondary">
                     <Plus className="w-3 h-3 mr-1" /> 新增
                 </Button>
             )}
@@ -424,19 +424,18 @@ export default function AssessmentPage() {
 
     return (
         <div className="flex-1 relative selection:bg-sky-800/30 pt-8 md:pt-12 pb-24">
-            <div className="relative z-10 flex flex-col lg:flex-row gap-6 w-full max-w-[95%] xl:max-w-[1320px] mx-auto px-4 md:px-8 items-start">
-
+            <div className="relative z-10 flex flex-col lg:flex-row gap-6 w-full max-w-[95%] xl:max-w-[1320px] mx-auto px-4 md:px-8 items-start text-foreground">
                 {/* Left Nav */}
                 <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="w-full lg:w-[190px] shrink-0 lg:sticky lg:top-24">
-                    <div className="bg-zinc-900/60 backdrop-blur-xl border border-white/5 p-1.5 rounded-2xl shadow-2xl flex flex-row flex-wrap gap-0.5 lg:flex-col">
+                    <div className="bg-card/60 backdrop-blur-xl border border-border p-1.5 rounded-2xl shadow-xl flex flex-row flex-wrap gap-0.5 lg:flex-col">
                         {steps.map((step) => {
                             const isActive = activeTab === step.id;
                             const Icon = step.icon;
                             return (
                                 <button key={step.id} onClick={() => setActiveTab(step.id)}
-                                    className={`relative flex items-center gap-2 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 z-10 text-left overflow-hidden lg:w-full ${isActive ? "text-white" : "text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03]"}`}>
-                                    {isActive && <motion.div layoutId="nav-pill" className="absolute inset-0 bg-sky-900/70 border border-sky-500/20 rounded-xl z-[-1]" transition={{ type: "spring", stiffness: 350, damping: 30 }} />}
-                                    <Icon size={13} className={isActive ? "text-sky-400" : "text-zinc-600"} />
+                                    className={`relative flex items-center gap-2 px-3 py-2.5 rounded-xl font-medium transition-all duration-200 z-10 text-left overflow-hidden lg:w-full ${isActive ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"}`}>
+                                    {isActive && <motion.div layoutId="nav-pill" className="absolute inset-0 bg-primary border border-primary/20 rounded-xl z-[-1]" transition={{ type: "spring", stiffness: 350, damping: 30 }} />}
+                                    <Icon size={13} className={isActive ? "text-primary-foreground" : "text-muted-foreground/60"} />
                                     <span className="text-[12px] tracking-wide whitespace-nowrap">{step.label}</span>
                                 </button>
                             );
@@ -497,7 +496,7 @@ export default function AssessmentPage() {
 
                 {/* Right Content */}
                 <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="w-full flex-1 min-w-0">
-                    <div className="bg-zinc-900/40 backdrop-blur-xl border border-white/5 rounded-2xl shadow-2xl flex flex-col min-h-[560px]">
+                    <div className="bg-card/40 backdrop-blur-xl border border-border rounded-2xl shadow-xl flex flex-col min-h-[560px]">
                         <div className="p-6 md:p-8 flex-1">
                             <AnimatePresence mode="wait">
 
@@ -523,7 +522,7 @@ export default function AssessmentPage() {
                                         </div>
                                         <div>
                                             <Label className={LBL}>建築營運時間</Label>
-                                            <div className="bg-zinc-800/30 border border-white/[0.04] rounded-xl p-4">
+                                            <div className="bg-secondary/30 border border-border rounded-xl p-4">
                                                 <div className="grid grid-cols-2 md:grid-cols-[1fr_1fr_1fr_1fr_auto] gap-3 items-end">
                                                     <div><Label className={LBLSM}>起始日</Label>
                                                         <Select value={basic.startDay} onValueChange={v => setB("startDay", v)}>
@@ -554,30 +553,30 @@ export default function AssessmentPage() {
                                     <motion.div key="energy" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.15 }} className="space-y-6">
                                         <div className="flex items-center justify-between">
                                             <SectionHeader icon={Zap} title="電費資料（2年）" />
-                                            <div className="flex items-center gap-3 bg-zinc-800/40 p-1.5 rounded-xl border border-white/[0.05]">
-                                                <button onClick={() => setBillCycle("monthly")} className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${billCycle === "monthly" ? "bg-sky-500 text-white shadow-lg shadow-sky-500/20" : "text-zinc-500 hover:text-zinc-300"}`}>月繳</button>
-                                                <button onClick={() => setBillCycle("bimonthly")} className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${billCycle === "bimonthly" ? "bg-sky-500 text-white shadow-lg shadow-sky-500/20" : "text-zinc-500 hover:text-zinc-300"}`}>雙月繳</button>
+                                            <div className="flex items-center gap-3 bg-secondary/40 p-1.5 rounded-xl border border-border">
+                                                <button onClick={() => setBillCycle("monthly")} className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${billCycle === "monthly" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:text-foreground"}`}>月繳</button>
+                                                <button onClick={() => setBillCycle("bimonthly")} className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${billCycle === "bimonthly" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:text-foreground"}`}>雙月繳</button>
                                             </div>
                                         </div>
-                                        <div className="rounded-xl overflow-hidden border border-white/[0.06]">
-                                            <div className="grid grid-cols-[140px_1fr_1fr] bg-zinc-800/50 border-b border-white/[0.06]">
-                                                <div className="py-3 px-4 text-[12px] text-zinc-500 font-medium flex items-center">月</div>
-                                                <div className="flex items-center px-3 border-l border-white/[0.06]">
-                                                    <Select value={yr1} onValueChange={setYr1}><SelectTrigger className="h-11 w-full bg-transparent dark:bg-transparent dark:hover:bg-transparent border-0 text-zinc-300 text-sm shadow-none focus:ring-0"><SelectValue /></SelectTrigger><SelectContent className={SC}>{[2025, 2024, 2023, 2022, 2021].map(y => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}</SelectContent></Select>
+                                        <div className="rounded-xl overflow-hidden border border-border">
+                                            <div className="grid grid-cols-[140px_1fr_1fr] bg-secondary/50 border-b border-border">
+                                                <div className="py-3 px-4 text-[12px] text-muted-foreground font-medium flex items-center">月</div>
+                                                <div className="flex items-center px-3 border-l border-border">
+                                                    <Select value={yr1} onValueChange={setYr1}><SelectTrigger className="h-11 w-full bg-transparent border-0 text-foreground text-sm shadow-none focus:ring-0"><SelectValue /></SelectTrigger><SelectContent className={SC}>{[2025, 2024, 2023, 2022, 2021].map(y => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}</SelectContent></Select>
                                                 </div>
-                                                <div className="flex items-center px-3 border-l border-white/[0.06]">
-                                                    <Select value={yr2} onValueChange={setYr2}><SelectTrigger className="h-11 w-full bg-transparent dark:bg-transparent dark:hover:bg-transparent border-0 text-zinc-300 text-sm shadow-none focus:ring-0"><SelectValue /></SelectTrigger><SelectContent className={SC}>{[2025, 2024, 2023, 2022, 2021].map(y => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}</SelectContent></Select>
+                                                <div className="flex items-center px-3 border-l border-border">
+                                                    <Select value={yr2} onValueChange={setYr2}><SelectTrigger className="h-11 w-full bg-transparent border-0 text-foreground text-sm shadow-none focus:ring-0"><SelectValue /></SelectTrigger><SelectContent className={SC}>{[2025, 2024, 2023, 2022, 2021].map(y => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}</SelectContent></Select>
                                                 </div>
                                             </div>
                                             {monthly.map((row, idx) => {
                                                 if (billCycle === "bimonthly" && row.m % 2 === 0) return null;
                                                 return (
-                                                    <div key={row.m} className={`grid grid-cols-[140px_1fr_1fr] border-b border-white/[0.04] last:border-0 ${idx % 2 === 0 ? "bg-zinc-800/20" : ""}`}>
-                                                        <div className="py-2 px-4 text-[13px] text-zinc-400 flex items-center">{billCycle === "bimonthly" ? `${row.m}-${row.m + 1} 月` : `${row.m} 月`}</div>
-                                                        <div className="px-3 py-2 border-l border-white/[0.04]">
+                                                    <div key={row.m} className={`grid grid-cols-[140px_1fr_1fr] border-b border-border last:border-0 ${idx % 2 === 0 ? "bg-secondary/20" : ""}`}>
+                                                        <div className="py-2 px-4 text-[13px] text-muted-foreground/80 flex items-center">{billCycle === "bimonthly" ? `${row.m}-${row.m + 1} 月` : `${row.m} 月`}</div>
+                                                        <div className="px-3 py-2 border-l border-border">
                                                             <Input type="number" value={row.y1} onChange={e => updM(idx, "y1", e.target.value)} placeholder="0" className={INPSM} />
                                                         </div>
-                                                        <div className="px-3 py-2 border-l border-white/[0.04]">
+                                                        <div className="px-3 py-2 border-l border-border">
                                                             <Input type="number" value={row.y2} onChange={e => updM(idx, "y2", e.target.value)} placeholder="0" className={INPSM} />
                                                         </div>
                                                     </div>
@@ -606,21 +605,21 @@ export default function AssessmentPage() {
                                                                 <div className="p-1.5 rounded-md bg-emerald-500/10 text-emerald-400"><LayoutDashboard size={14} /></div>
                                                                 <h2 className="text-sm font-bold tracking-wider text-emerald-400 uppercase">耗能評估分區</h2>
                                                             </div>
-                                                            <Button onClick={() => addSp()} variant="outline" size="sm" className="h-7 px-2.5 text-[11px] rounded-lg border-white/10 bg-white/[0.02] text-zinc-500 hover:text-white hover:bg-white/[0.06]"><Plus className="w-3 h-3 mr-1" /> 新增分區</Button>
+                                                            <Button onClick={() => addSp()} variant="outline" size="sm" className="h-7 px-2.5 text-[11px] rounded-lg border-border bg-secondary/50 text-muted-foreground hover:text-foreground hover:bg-secondary"><Plus className="w-3 h-3 mr-1" /> 新增分區</Button>
                                                         </div>
-                                                        <div className="rounded-xl overflow-hidden border border-white/[0.06]">
-                                                            <div className="grid grid-cols-[2fr_1fr_100px_50px] bg-zinc-800/50 border-b border-white/[0.06]">
-                                                                <div className="py-2.5 px-3 text-[11px] text-zinc-500">空間類型</div>
-                                                                <div className="py-2.5 px-3 text-[11px] text-zinc-500 border-l border-white/[0.06]">空調</div>
-                                                                <div className="py-2.5 px-3 text-[11px] text-zinc-500 border-l border-white/[0.06]">面積 (m²)</div>
+                                                        <div className="rounded-xl overflow-hidden border border-border">
+                                                            <div className="grid grid-cols-[2fr_1fr_100px_50px] bg-secondary/50 border-b border-border">
+                                                                <div className="py-2.5 px-3 text-[11px] text-muted-foreground/60">空間類型</div>
+                                                                <div className="py-2.5 px-3 text-[11px] text-muted-foreground/60 border-l border-border">空調</div>
+                                                                <div className="py-2.5 px-3 text-[11px] text-muted-foreground/60 border-l border-border">面積 (m²)</div>
                                                                 <div />
                                                             </div>
                                                             {spaces.map((sp, idx) => (
-                                                                <div key={sp.id} className={`grid grid-cols-[2fr_1fr_100px_50px] border-b border-white/[0.04] last:border-0 ${idx % 2 === 0 ? "bg-zinc-800/20" : ""}`}>
+                                                                <div key={sp.id} className={`grid grid-cols-[2fr_1fr_100px_50px] border-b border-border last:border-0 ${idx % 2 === 0 ? "bg-secondary/20" : ""}`}>
                                                                     <div className="px-2 py-1.5"><Select value={sp.typeCode} onValueChange={v => setSpaces(spaces.map(s => s.id === sp.id ? { ...s, typeCode: v } : s))}><SelectTrigger className={SELSM}><SelectValue placeholder="請選擇" /></SelectTrigger><SelectContent className={`${SC} max-h-60`}>{Object.entries(euiTable as any).map(([code, data]: any) => <SelectItem key={code} value={code}>{data.name} ({code})</SelectItem>)}</SelectContent></Select></div>
-                                                                    <div className="px-2 py-1.5 border-l border-white/[0.04]"><Select value={sp.isIntermittent ? "yes" : "no"} onValueChange={v => setSpaces(spaces.map(s => s.id === sp.id ? { ...s, isIntermittent: v === "yes" } : s))}><SelectTrigger className={SELSM}><SelectValue /></SelectTrigger><SelectContent className={SC}><SelectItem value="yes">間歇</SelectItem><SelectItem value="no">全天</SelectItem></SelectContent></Select></div>
-                                                                    <div className="px-2 py-1.5 border-l border-white/[0.04]"><Input type="number" value={sp.area} onChange={e => setSpaces(spaces.map(s => s.id === sp.id ? { ...s, area: e.target.value } : s))} placeholder="m²" className={INPSM} /></div>
-                                                                    <div className="flex items-center justify-center border-l border-white/[0.04]"><button onClick={() => rmSp(sp.id)} className="text-[11px] text-zinc-700 hover:text-red-400 transition-colors px-2">✕</button></div>
+                                                                    <div className="px-2 py-1.5 border-l border-border"><Select value={sp.isIntermittent ? "yes" : "no"} onValueChange={v => setSpaces(spaces.map(s => s.id === sp.id ? { ...s, isIntermittent: v === "yes" } : s))}><SelectTrigger className={SELSM}><SelectValue /></SelectTrigger><SelectContent className={SC}><SelectItem value="yes">間歇</SelectItem><SelectItem value="no">全天</SelectItem></SelectContent></Select></div>
+                                                                    <div className="px-2 py-1.5 border-l border-border"><Input type="number" value={sp.area} onChange={e => setSpaces(spaces.map(s => s.id === sp.id ? { ...s, area: e.target.value } : s))} placeholder="m²" className={INPSM} /></div>
+                                                                    <div className="flex items-center justify-center border-l border-border"><button onClick={() => rmSp(sp.id)} className="text-[11px] text-muted-foreground/40 hover:text-red-400 transition-colors px-2">✕</button></div>
                                                                 </div>
                                                             ))}
                                                         </div>
@@ -630,22 +629,22 @@ export default function AssessmentPage() {
                                                     <div className="space-y-4">
                                                         <div className="flex items-center justify-between">
                                                             <div className="flex items-center gap-2">
-                                                                <div className="p-1.5 rounded-md bg-zinc-500/10 text-zinc-400"><ShieldOff size={14} /></div>
-                                                                <h2 className="text-sm font-bold tracking-wider text-zinc-400 uppercase">免評評估分區</h2>
+                                                                <div className="p-1.5 rounded-md bg-secondary text-muted-foreground/60"><ShieldOff size={14} /></div>
+                                                                <h2 className="text-sm font-bold tracking-wider text-muted-foreground/60 uppercase">免評評估分區</h2>
                                                             </div>
-                                                            <Button onClick={() => addExSp()} variant="outline" size="sm" className="h-7 px-2.5 text-[11px] rounded-lg border-white/10 bg-white/[0.02] text-zinc-500 hover:text-white hover:bg-white/[0.06]"><Plus className="w-3 h-3 mr-1" /> 新增免評分區</Button>
+                                                            <Button onClick={() => addExSp()} variant="outline" size="sm" className="h-7 px-2.5 text-[11px] rounded-lg border-border bg-secondary/50 text-muted-foreground hover:text-foreground hover:bg-secondary"><Plus className="w-3 h-3 mr-1" /> 新增免評分區</Button>
                                                         </div>
-                                                        <div className="rounded-xl overflow-hidden border border-white/[0.06]">
-                                                            <div className="grid grid-cols-[2fr_100px_50px] bg-zinc-800/50 border-b border-white/[0.06]">
-                                                                <div className="py-2.5 px-3 text-[11px] text-zinc-500">免評估空間類型</div>
-                                                                <div className="py-2.5 px-3 text-[11px] text-zinc-500 border-l border-white/[0.06]">面積 (m²)</div>
+                                                        <div className="rounded-xl overflow-hidden border border-border">
+                                                            <div className="grid grid-cols-[2fr_100px_50px] bg-secondary/50 border-b border-border">
+                                                                <div className="py-2.5 px-3 text-[11px] text-muted-foreground/60">免評估空間類型</div>
+                                                                <div className="py-2.5 px-3 text-[11px] text-muted-foreground/60 border-l border-border">面積 (m²)</div>
                                                                 <div />
                                                             </div>
                                                             {exemptSpaces.length === 0 && (
-                                                                <div className="py-6 text-center text-zinc-600 text-xs italic">尚無免評估分區</div>
+                                                                <div className="py-6 text-center text-muted-foreground/60 text-xs italic">尚無免評估分區</div>
                                                             )}
                                                             {exemptSpaces.map((sp, idx) => (
-                                                                <div key={sp.id} className={`grid grid-cols-[2fr_100px_50px] border-b border-white/[0.04] last:border-0 ${idx % 2 === 0 ? "bg-zinc-800/20" : ""}`}>
+                                                                <div key={sp.id} className={`grid grid-cols-[2fr_100px_50px] border-b border-border last:border-0 ${idx % 2 === 0 ? "bg-secondary/20" : ""}`}>
                                                                     <div className="px-2 py-1.5"><Select value={sp.typeCode} onValueChange={v => setExemptSpaces(exemptSpaces.map(s => s.id === sp.id ? { ...s, typeCode: v } : s))}><SelectTrigger className={SELSM}><SelectValue placeholder="請選擇" /></SelectTrigger><SelectContent className={`${SC} max-h-60`}>{exemptEuiTable.map((data: any) => <SelectItem key={data.mainCode} value={data.mainCode}>{data.description} ({data.mainCode})</SelectItem>)}</SelectContent></Select></div>
                                                                     <div className="px-2 py-1.5 border-l border-white/[0.04]"><Input type="number" value={sp.area} onChange={e => setExemptSpaces(exemptSpaces.map(s => s.id === sp.id ? { ...s, area: e.target.value } : s))} placeholder="m²" className={INPSM} /></div>
                                                                     <div className="flex items-center justify-center border-l border-white/[0.04]"><button onClick={() => rmExSp(sp.id)} className="text-[11px] text-zinc-700 hover:text-red-400 transition-colors px-2">✕</button></div>
@@ -655,33 +654,33 @@ export default function AssessmentPage() {
                                                     </div>
 
                                                     {/* Summary Card */}
-                                                    <div className="bg-zinc-800/30 border border-white/[0.05] rounded-xl p-4 grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                                                    <div className="bg-secondary/30 border border-border rounded-xl p-4 grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                                                         <div className="space-y-3">
                                                             <div className="flex items-center justify-between text-[12px]">
-                                                                <span className="text-zinc-400">總樓地板面積 (加總)</span>
-                                                                <span className={`font-mono font-bold text-lg ${isOver ? "text-red-400" : "text-zinc-100"}`}>{totalSpaceArea.toFixed(2)} m²</span>
+                                                                <span className="text-muted-foreground">總樓地板面積 (加總)</span>
+                                                                <span className={`font-mono font-bold text-lg ${isOver ? "text-red-500" : "text-foreground"}`}>{totalSpaceArea.toFixed(2)} m²</span>
                                                             </div>
                                                             <div className="flex items-center justify-between text-[12px]">
-                                                                <span className="text-zinc-500">基本資料設定面積</span>
-                                                                <span className="font-mono text-zinc-400">{basicArea.toFixed(2)} m²</span>
+                                                                <span className="text-muted-foreground/80">基本資料設定面積</span>
+                                                                <span className="font-mono text-muted-foreground">{basicArea.toFixed(2)} m²</span>
                                                             </div>
                                                             <div className="space-y-1.5">
-                                                                <div className="w-full h-1.5 bg-zinc-700/50 rounded-full overflow-hidden">
-                                                                    <div className={`h-full rounded-full transition-all duration-500 ${isOver ? "bg-red-500" : ratio > 0.95 ? "bg-emerald-400" : "bg-sky-500"}`} style={{ width: `${ratio * 100}%` }} />
+                                                                <div className="w-full h-1.5 bg-secondary rounded-full overflow-hidden">
+                                                                    <div className={`h-full rounded-full transition-all duration-500 ${isOver ? "bg-red-500" : ratio > 0.95 ? "bg-emerald-500" : "bg-primary"}`} style={{ width: `${ratio * 100}%` }} />
                                                                 </div>
-                                                                <p className={`text-[10px] uppercase tracking-wider font-bold ${isOver ? "text-red-500" : ratio > 0.95 ? "text-emerald-500" : "text-zinc-500"}`}>
+                                                                <p className={`text-[10px] uppercase tracking-wider font-bold ${isOver ? "text-red-500" : ratio > 0.95 ? "text-emerald-500" : "text-muted-foreground/60"}`}>
                                                                     {isOver ? `面積超出 ${((totalSpaceArea / (basicArea || 1) - 1) * 100).toFixed(1)}%` : `填寫進度 ${(ratio * 100).toFixed(1)}%`}
                                                                 </p>
                                                             </div>
                                                         </div>
                                                         <div className="grid grid-cols-2 gap-4">
-                                                            <div className="bg-white/5 rounded-lg p-3 border border-white/10 flex flex-col justify-center">
-                                                                <p className="text-[10px] text-zinc-500 uppercase font-black mb-1 tracking-widest">評估面積</p>
-                                                                <p className="text-lg font-mono text-emerald-400 font-black">{totalEnergyArea.toFixed(2)}</p>
+                                                            <div className="bg-secondary/50 rounded-lg p-3 border border-border flex flex-col justify-center">
+                                                                <p className="text-[10px] text-muted-foreground uppercase font-black mb-1 tracking-widest">評估面積</p>
+                                                                <p className="text-lg font-mono text-emerald-600 dark:text-emerald-400 font-black">{totalEnergyArea.toFixed(2)}</p>
                                                             </div>
-                                                            <div className="bg-white/5 rounded-lg p-3 border border-white/10 flex flex-col justify-center">
-                                                                <p className="text-[10px] text-zinc-500 uppercase font-black mb-1 tracking-widest">免評面積</p>
-                                                                <p className="text-lg font-mono text-zinc-400 font-black">{totalExemptArea.toFixed(2)}</p>
+                                                            <div className="bg-secondary/50 rounded-lg p-3 border border-border flex flex-col justify-center">
+                                                                <p className="text-[10px] text-muted-foreground uppercase font-black mb-1 tracking-widest">免評面積</p>
+                                                                <p className="text-lg font-mono text-muted-foreground font-black">{totalExemptArea.toFixed(2)}</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -689,14 +688,14 @@ export default function AssessmentPage() {
 
                                                 {/* Area tools */}
                                                 <div className="xl:w-[420px] shrink-0">
-                                                    <div className="bg-zinc-800/20 border border-white/[0.06] rounded-xl p-3 flex flex-col gap-3 h-full sticky top-4">
+                                                    <div className="bg-secondary/20 border border-border rounded-xl p-3 flex flex-col gap-3 h-fit sticky top-4">
                                                         <div className="flex items-center gap-2">
-                                                            <div className="p-1 rounded-md bg-sky-500/10 text-sky-400"><Map size={13} /></div>
-                                                            <p className="text-[12px] font-black text-zinc-300 uppercase tracking-widest">平面圖面積工具</p>
+                                                            <div className="p-1 rounded-md bg-primary/10 text-primary"><Map size={13} /></div>
+                                                            <p className="text-[12px] font-black text-foreground uppercase tracking-widest">平面圖面積工具</p>
                                                         </div>
                                                         <div className="space-y-4 mt-2">
                                                             <div>
-                                                                <Label className="text-[11px] text-zinc-500 mb-1.5 block uppercase font-bold">樓層執照面積 (m²)</Label>
+                                                                <Label className="text-[11px] text-muted-foreground mb-1.5 block uppercase font-bold">樓層執照面積 (m²)</Label>
                                                                 <Input type="number" value={floorLicenseArea} onChange={e => setFloorLicenseArea(e.target.value)}
                                                                     placeholder={basicArea > 0 ? `預設使用基本資料 ${basicArea} m²` : "輸入執照總面積"}
                                                                     className={INPSM} />
@@ -708,8 +707,8 @@ export default function AssessmentPage() {
                                                                     setExemptSpaces(p => [...p, { id: Date.now(), typeCode: "", area: area.toFixed(1) }]);
                                                                 }}
                                                             />
-                                                            <div className="p-3 bg-white/5 rounded-xl border border-white/5">
-                                                                <p className="text-[10px] text-zinc-500 leading-relaxed italic">
+                                                            <div className="p-3 bg-secondary/50 rounded-xl border border-border">
+                                                                <p className="text-[10px] text-muted-foreground/80 leading-relaxed italic">
                                                                     * 使用工具繪製平面圖分區，系統將自動依據上述「執照面積」換算為實際平方公尺。
                                                                 </p>
                                                             </div>
@@ -728,8 +727,8 @@ export default function AssessmentPage() {
                                         {/* 空調設備 */}
                                         <div>
                                             <SubHead title="空調設備" onAdd={addAc} />
-                                            {acList.length === 0 ? <p className="text-zinc-700 text-xs py-2">尚無設備，點擊「+ 新增」加入</p> : acList.map(item => (
-                                                <div key={item.id} className="bg-zinc-800/30 border border-white/[0.05] rounded-xl p-4 mb-2 group">
+                                            {acList.length === 0 ? <p className="text-muted-foreground/60 text-xs py-2">尚無設備，點擊「+ 新增」加入</p> : acList.map(item => (
+                                                <div key={item.id} className="bg-secondary/30 border border-border rounded-xl p-4 mb-2 group">
                                                     <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                                                         <div><Label className={LBLSM}>類型</Label>
                                                             <Select value={item.type} onValueChange={v => upAc(item.id, "type", v)}>
@@ -747,15 +746,19 @@ export default function AssessmentPage() {
                                                         <div><Label className={LBLSM}>年份</Label><Input type="number" value={item.year} onChange={e => upAc(item.id, "year", e.target.value)} placeholder="2020" className={INP} /></div>
                                                         <div><Label className={LBLSM}>使用時間（小時/年）</Label><Input type="number" value={item.hours} onChange={e => upAc(item.id, "hours", e.target.value)} className={INP} /></div>
                                                     </div>
-                                                    <div className="flex justify-end mt-2"><button onClick={() => rmAc(item.id)} className="text-[11px] text-zinc-700 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100">移除</button></div>
+                                                    <div className="flex justify-end mt-2">
+                                                        <button onClick={() => rmAc(item.id)} className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-red-500/5 border border-red-500/10 text-red-500/60 hover:text-red-500 hover:bg-red-500/10 transition-all text-[11px] font-medium">
+                                                            <Trash2 size={12} /> 移除
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
                                         {/* 照明設備 */}
                                         <div>
                                             <SubHead title="照明設備" onAdd={addLt} />
-                                            {ltList.length === 0 ? <p className="text-zinc-700 text-xs py-2">尚無設備，點擊「+ 新增」加入</p> : ltList.map(item => (
-                                                <div key={item.id} className="bg-zinc-800/30 border border-white/[0.05] rounded-xl p-4 mb-2 group">
+                                            {ltList.length === 0 ? <p className="text-muted-foreground/60 text-xs py-2">尚無設備，點擊「+ 新增」加入</p> : ltList.map(item => (
+                                                <div key={item.id} className="bg-secondary/30 border border-border rounded-xl p-4 mb-2 group">
                                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                                         <div><Label className={LBLSM}>類型</Label>
                                                             <Select value={item.type} onValueChange={v => upLt(item.id, "type", v)}>
@@ -767,15 +770,19 @@ export default function AssessmentPage() {
                                                         <div><Label className={LBLSM}>年份</Label><Input type="number" value={item.year} onChange={e => upLt(item.id, "year", e.target.value)} placeholder="2020" className={INP} /></div>
                                                         <div><Label className={LBLSM}>使用時間（小時/年）</Label><Input type="number" value={item.hours} onChange={e => upLt(item.id, "hours", e.target.value)} className={INP} /></div>
                                                     </div>
-                                                    <div className="flex justify-end mt-2"><button onClick={() => rmLt(item.id)} className="text-[11px] text-zinc-700 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100">移除</button></div>
+                                                    <div className="flex justify-end mt-2">
+                                                        <button onClick={() => rmLt(item.id)} className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-red-500/5 border border-red-500/10 text-red-500/60 hover:text-red-500 hover:bg-red-500/10 transition-all text-[11px] font-medium">
+                                                            <Trash2 size={12} /> 移除
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
                                         {/* 電梯設備 */}
                                         <div>
                                             <SubHead title="電梯設備" onAdd={addEl} />
-                                            {elList.length === 0 ? <p className="text-zinc-700 text-xs py-2">尚無設備，點擊「+ 新增」加入</p> : elList.map(item => (
-                                                <div key={item.id} className="bg-zinc-800/30 border border-white/[0.05] rounded-xl p-4 mb-2 group">
+                                            {elList.length === 0 ? <p className="text-muted-foreground/60 text-xs py-2">尚無設備，點擊「+ 新增」加入</p> : elList.map(item => (
+                                                <div key={item.id} className="bg-secondary/30 border border-border rounded-xl p-4 mb-2 group">
                                                     <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
                                                         <div><Label className={LBLSM}>類型</Label>
                                                             <Select value={item.type} onValueChange={v => upEl(item.id, "type", v)}>
@@ -789,22 +796,34 @@ export default function AssessmentPage() {
                                                         <div><Label className={LBLSM}>年份</Label><Input type="number" value={item.year} onChange={e => upEl(item.id, "year", e.target.value)} placeholder="2020" className={INP} /></div>
                                                         <div><Label className={LBLSM}>使用時間（小時/年）</Label><Input type="number" value={item.hours} onChange={e => upEl(item.id, "hours", e.target.value)} className={INP} /></div>
                                                     </div>
-                                                    <div className="flex justify-end mt-2"><button onClick={() => rmEl(item.id)} className="text-[11px] text-zinc-700 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100">移除</button></div>
+                                                    <div className="flex justify-end mt-2">
+                                                        <button onClick={() => rmEl(item.id)} className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-red-500/5 border border-red-500/10 text-red-500/60 hover:text-red-500 hover:bg-red-500/10 transition-all text-[11px] font-medium">
+                                                            <Trash2 size={12} /> 移除
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
                                         {/* 資訊機房 */}
                                         <div>
                                             <SubHead title="資訊機房" onAdd={addSv} />
-                                            {svList.length === 0 ? <p className="text-zinc-700 text-xs py-2">尚無資料，點擊「+ 新增」加入</p> : svList.map(item => (
-                                                <div key={item.id} className="bg-zinc-800/30 border border-white/[0.05] rounded-xl p-4 mb-2 group">
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                                        <div><Label className={LBLSM}>機房名稱</Label><Input value={item.name} onChange={e => upSv(item.id, "name", e.target.value)} className={INP} /></div>
-                                                        <div><Label className={LBLSM}>機櫃總功率 (kW)</Label><Input type="number" value={item.power} onChange={e => upSv(item.id, "power", e.target.value)} className={INP} /></div>
-                                                    </div>
-                                                    <div className="flex justify-end mt-2"><button onClick={() => rmSv(item.id)} className="text-[11px] text-zinc-700 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100">移除</button></div>
+                                            {svList.length === 0 ? <p className="text-muted-foreground/60 text-xs py-2">尚無資料，點擊「+ 新增」加入</p> : (
+                                                <div className="space-y-3">
+                                                    {svList.map(item => (
+                                                        <div key={item.id} className="bg-secondary/40 border border-border rounded-xl p-4 mb-2 group">
+                                                            <div className="grid grid-cols-2 gap-4">
+                                                                <div><Label className={LBLSM}>機房名稱</Label><Input value={item.name} onChange={e => upSv(item.id, "name", e.target.value)} className={INP} /></div>
+                                                                <div><Label className={LBLSM}>機櫃總功率 (kW)</Label><Input type="number" value={item.power} onChange={e => upSv(item.id, "power", e.target.value)} className={INP} /></div>
+                                                            </div>
+                                                            <div className="flex justify-end mt-2">
+                                                                <button onClick={() => rmSv(item.id)} className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-red-500/5 border border-red-500/10 text-red-500/60 hover:text-red-500 hover:bg-red-500/10 transition-all text-[11px] font-medium">
+                                                                    <Trash2 size={12} /> 移除
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    ))}
                                                 </div>
-                                            ))}
+                                            )}
                                         </div>
                                     </motion.div>
                                 )}
@@ -856,9 +875,9 @@ export default function AssessmentPage() {
                                 {activeTab === "operation" && (
                                     <motion.div key="operation" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.15 }} className="space-y-6">
                                         <SectionHeader icon={Activity} title="營運率數據" />
-                                        <div className="flex items-start gap-3 bg-sky-950/30 border border-sky-500/10 rounded-xl px-4 py-3">
-                                            <span className="text-sky-400 text-sm mt-0.5">💡</span>
-                                            <p className="text-[13px] text-zinc-400 leading-relaxed">提示：針對有會議或演藝空間的建築物，請填寫相關空間的營運人數。非必填，如無相關空間可留白。</p>
+                                        <div className="flex items-start gap-3 bg-primary/5 border border-primary/10 rounded-xl px-4 py-3">
+                                            <span className="text-primary text-sm mt-0.5">💡</span>
+                                            <p className="text-[13px] text-muted-foreground leading-relaxed">提示：針對有會議或演藝空間的建築物，請填寫相關空間的營運人數。非必填，如無相關空間可留白。</p>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                                             <div><Label className={LBL}>展覽區營業率</Label><Input type="number" step="0.1" max="1" value={op.exhibitionOR} onChange={e => setO("exhibitionOR", e.target.value)} placeholder="例如：0.6" className={INP} /></div>
@@ -867,9 +886,9 @@ export default function AssessmentPage() {
                                             <div><Label className={LBL}>國家級演藝廳營運率</Label><Input type="number" step="0.1" max="1" value={op.nationalTheaterOR} onChange={e => setO("nationalTheaterOR", e.target.value)} placeholder="例如：0.8" className={INP} /></div>
                                             <div><Label className={LBL}>一般演藝廳營運率</Label><Input type="number" step="0.1" max="1" value={op.generalTheaterOR} onChange={e => setO("generalTheaterOR", e.target.value)} placeholder="例如：0.7" className={INP} /></div>
                                         </div>
-                                        <div className="bg-zinc-800/30 border border-white/[0.05] rounded-xl p-4">
-                                            <p className="text-[12px] font-semibold text-zinc-400 mb-2">營業率參考值：</p>
-                                            <ul className="text-[12px] text-zinc-500 space-y-1">
+                                        <div className="bg-secondary/30 border border-border rounded-xl p-4">
+                                            <p className="text-[12px] font-semibold text-muted-foreground mb-2">營業率參考值：</p>
+                                            <ul className="text-[12px] text-muted-foreground/60 space-y-1">
                                                 <li>• 展覽區：通常為100部年/台（上限273）</li>
                                                 <li>• 200以上會議室：通常為100部年/台（上限208）</li>
                                                 <li>• 200人以下會議室：通常為100部年/台（上限208）</li>
@@ -886,20 +905,20 @@ export default function AssessmentPage() {
                                         {result ? (
                                             <div className="space-y-6">
                                                 <div className="flex justify-end">
-                                                    <Button onClick={calculate} size="sm" className="h-8 px-4 text-[12px] rounded-lg bg-sky-900/60 hover:bg-sky-800/80 text-sky-100 border border-sky-500/20 transition-all">
+                                                    <Button onClick={calculate} size="sm" className="h-8 px-4 text-[12px] rounded-lg bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all">
                                                         <Activity className="w-3 h-3 mr-2" /> 重新計算
                                                     </Button>
                                                 </div>
                                                 <SummaryReport result={result} basic={basic} />
                                             </div>
                                         ) : (
-                                            <div className="flex flex-col items-center justify-center h-[400px] border border-dashed border-white/5 rounded-2xl hover:border-sky-500/15 transition-all duration-500">
-                                                <div className="p-4 rounded-full bg-sky-500/5 mb-4 hover:scale-110 transition-transform duration-500">
-                                                    <BarChart3 size={32} className="text-sky-500/20" />
+                                            <div className="flex flex-col items-center justify-center h-[400px] border border-dashed border-border rounded-2xl hover:border-primary/20 transition-all duration-500">
+                                                <div className="p-4 rounded-full bg-primary/5 mb-4 hover:scale-110 transition-transform duration-500">
+                                                    <BarChart3 size={32} className="text-primary/40" />
                                                 </div>
-                                                <h3 className="text-zinc-400 font-bold mb-2">尚未產生能效評估</h3>
-                                                <p className="text-zinc-600 text-[13px] mb-8 max-w-xs text-center">請先完成基本資料、用電量與分區空間等數據填寫，或開啟 Demo 模式快速預覽。</p>
-                                                <Button onClick={calculate} className="rounded-full bg-sky-900 text-white font-bold h-11 px-10 hover:bg-sky-800 border border-sky-500/20 shadow-[0_8px_20px_rgba(7,89,133,0.3)] transition-all active:scale-95">點此開始分析</Button>
+                                                <h3 className="text-foreground font-bold mb-2">尚未產生能效評估</h3>
+                                                <p className="text-muted-foreground text-[13px] mb-8 max-w-xs text-center">請先完成基本資料、用電量與分區空間等數據填寫，或開啟 Demo 模式快速預覽。</p>
+                                                <Button onClick={calculate} className="rounded-full bg-primary text-primary-foreground font-bold h-11 px-10 hover:bg-primary/90 border border-primary/20 shadow-xl transition-all active:scale-95">點此開始分析</Button>
                                             </div>
                                         )}
                                     </motion.div>
@@ -928,9 +947,9 @@ export default function AssessmentPage() {
                         </div>
 
                         {/* Bottom Navigation */}
-                        <div className="px-6 md:px-8 py-4 border-t border-white/[0.04] flex justify-between items-center rounded-b-2xl">
+                        <div className="px-6 md:px-8 py-4 border-t border-border flex justify-between items-center rounded-b-2xl">
                             <Button variant="ghost" onClick={handlePrev} disabled={currentIndex === 0}
-                                className={`h-9 px-4 text-sm font-medium text-zinc-500 hover:text-zinc-200 hover:bg-white/5 rounded-lg transition-all ${currentIndex === 0 ? "invisible" : ""}`}>
+                                className={`h-9 px-4 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-all ${currentIndex === 0 ? "invisible" : ""}`}>
                                 <ArrowLeft className="mr-2 w-4 h-4" /> 返回上一步
                             </Button>
 
@@ -939,10 +958,10 @@ export default function AssessmentPage() {
                                 variant="ghost"
                                 size="sm"
                                 disabled={isCloudSaving}
-                                className="h-9 px-4 text-sm font-medium text-zinc-500 hover:text-sky-400 hover:bg-sky-500/5 rounded-lg transition-all"
+                                className="h-9 px-4 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg transition-all"
                             >
                                 {isCloudSaving ? (
-                                    <Loader2 className="mr-2 w-4 h-4 animate-spin text-sky-500" />
+                                    <Loader2 className="mr-2 w-4 h-4 animate-spin text-primary" />
                                 ) : (
                                     <Save className="mr-2 w-4 h-4" />
                                 )}
@@ -950,11 +969,11 @@ export default function AssessmentPage() {
                             </Button>
 
                             {currentIndex === steps.length - 1 ? (
-                                <Button variant="ghost" onClick={handleComplete} disabled={isSubmitting} className="h-9 px-4 text-sm font-medium text-zinc-500 hover:text-emerald-400 hover:bg-emerald-500/5 rounded-lg transition-all disabled:opacity-50">
+                                <Button variant="ghost" onClick={handleComplete} disabled={isSubmitting} className="h-9 px-4 text-sm font-medium text-muted-foreground hover:text-emerald-500 hover:bg-emerald-500/5 rounded-lg transition-all disabled:opacity-50">
                                     {isSubmitting ? "計算中..." : <><Activity className="mr-2 w-4 h-4" />開始能效計算</>}
                                 </Button>
                             ) : (
-                                <Button variant="ghost" onClick={handleNext} className="h-9 px-4 text-sm font-medium text-zinc-500 hover:text-zinc-200 hover:bg-white/5 rounded-lg transition-all">
+                                <Button variant="ghost" onClick={handleNext} className="h-9 px-4 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-all">
                                     下個階段 <ArrowRight className="ml-2 w-4 h-4" />
                                 </Button>
                             )}
@@ -965,25 +984,25 @@ export default function AssessmentPage() {
 
             {/* Demo Mode Toggle (Bottom Left Floating) */}
             < div className="fixed bottom-6 left-6 z-[100]" >
-                <div className="bg-zinc-900/80 backdrop-blur-md border border-white/10 p-2.5 rounded-2xl shadow-2xl flex items-center gap-3">
+                <div className="bg-popover/80 backdrop-blur-md border border-border p-2.5 rounded-2xl shadow-xl flex items-center gap-3">
                     <div className="flex items-center gap-2 px-1">
                         <Checkbox
                             id="demo-mode"
                             checked={isDemoMode}
                             onCheckedChange={handleToggleDemo}
-                            className="w-5 h-5 rounded-md border-white/20 data-[state=checked]:bg-sky-500 data-[state=checked]:border-sky-500"
+                            className="w-5 h-5 rounded-md border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                         />
-                        <Label htmlFor="demo-mode" className="text-xs font-bold text-zinc-400 cursor-pointer select-none">
+                        <Label htmlFor="demo-mode" className="text-xs font-bold text-muted-foreground cursor-pointer select-none">
                             DEMO MODE
                         </Label>
                     </div>
                     {!isDemoMode && basic.companyName && (
                         <>
-                            <div className="h-5 w-[1px] bg-white/10 mx-1" />
+                            <div className="h-5 w-[1px] bg-border mx-1" />
                             <Button
                                 onClick={saveAsDemo}
                                 variant="outline"
-                                className="h-7 px-3 text-[10px] font-bold rounded-lg border-white/10 bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10"
+                                className="h-7 px-3 text-[10px] font-bold rounded-lg border-border bg-secondary/50 text-muted-foreground hover:text-foreground hover:bg-secondary"
                             >
                                 <Save className="w-3 h-3 mr-1.5" /> 存為本機 DEMO
                             </Button>
@@ -991,15 +1010,15 @@ export default function AssessmentPage() {
                     )}
                     {isDemoMode && (
                         <>
-                            <div className="h-5 w-[1px] bg-white/10 mx-1" />
+                            <div className="h-5 w-[1px] bg-border mx-1" />
                             <div className="flex items-center gap-3 px-1">
-                                <div className="text-[10px] font-medium text-sky-400/80 tracking-tight whitespace-nowrap">
+                                <div className="text-[10px] font-medium text-primary tracking-tight whitespace-nowrap">
                                     數據已載入
                                 </div>
                                 <Button
                                     onClick={resetDemoToDefault}
                                     variant="ghost"
-                                    className="h-7 px-2 text-[9px] font-bold text-zinc-500 hover:text-white hover:bg-white/5 flex items-center gap-1"
+                                    className="h-7 px-2 text-[9px] font-bold text-muted-foreground hover:text-foreground hover:bg-secondary flex items-center gap-1"
                                 >
                                     <RotateCcw className="w-3 h-3" /> 重設
                                 </Button>

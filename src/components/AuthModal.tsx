@@ -86,14 +86,14 @@ export function AuthModal() {
         return (
             <div className="flex items-center gap-4">
                 <div className="hidden md:flex flex-col items-end">
-                    <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest leading-none mb-1">Authenticated</span>
-                    <span className="text-[12px] text-zinc-300 font-medium leading-none">{user.email?.split('@')[0]}</span>
+                    <span className="text-[10px] text-muted-foreground/60 font-mono uppercase tracking-widest leading-none mb-1">Authenticated</span>
+                    <span className="text-[12px] text-foreground font-bold leading-none">{user.email?.split('@')[0]}</span>
                 </div>
                 <Button
                     variant="outline"
                     size="sm"
                     onClick={handleLogout}
-                    className="h-9 px-4 rounded-full border-white/10 bg-white/[0.02] text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-all"
+                    className="h-9 px-4 rounded-full border-border bg-secondary/50 text-muted-foreground hover:text-foreground hover:bg-secondary transition-all"
                 >
                     <LogOut size={14} className="mr-2" />
                     登出
@@ -108,7 +108,7 @@ export function AuthModal() {
                 <Button
                     variant="outline"
                     size="sm"
-                    className="h-9 px-4 rounded-full border-white/10 bg-white/[0.02] text-zinc-300 hover:text-white hover:bg-sky-500/10 hover:border-sky-500/30 transition-all font-medium"
+                    className="h-9 px-4 rounded-full border-border bg-secondary/50 text-foreground hover:bg-sky-500/10 hover:border-sky-500/30 transition-all font-bold"
                 >
                     <LogIn size={14} className="mr-2 text-sky-400" />
                     登入 / 註冊
