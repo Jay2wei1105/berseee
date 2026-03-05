@@ -148,9 +148,9 @@ export default function AnalyticsPage() {
                             <Cpu className="text-sky-400 animate-pulse" />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-black tracking-tighter italic flex items-center gap-6 text-foreground uppercase leading-none">
+                            <h1 className="text-3xl font-black tracking-tighter flex items-center gap-6 text-foreground uppercase leading-none">
                                 <span className="flex items-baseline gap-2">
-                                    建築 <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-blue-700 font-black">能效分析</span>
+                                    建築能效分析
                                 </span>
                                 <span className="hidden xl:inline-block text-[10px] font-mono text-muted-foreground tracking-[0.3em] uppercase border-l border-border pl-6">
                                     Advanced Building Energy Performance System
